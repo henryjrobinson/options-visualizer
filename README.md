@@ -1,18 +1,79 @@
-# Getting Started with Create React App
+# Options Trading Visualizer with Alpaca Integration
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+A modern, interactive React application for visualizing options trading data and metrics with integrated Alpaca Trading API functionality. This tool helps traders understand complex options concepts through intuitive visual representations and execute trades directly from the interface.
 
-## Available Scripts
+## Features
 
-In the project directory, you can run:
+- Visual price analysis with current price, strike price, and break-even markers
+- Option Greeks visualization (Delta, Gamma, Theta, Vega)
+- Risk assessment and profit potential analysis
+- Option vitals display (IV, expiration, volume, open interest)
+- Related options comparison
+- **Alpaca Trading Integration**:
+  - Real-time account information display
+  - Options order placement
+  - Stock data fetching
+  - Options chain data retrieval
 
-### `npm start`
+This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app) and uses Tailwind CSS for styling. The backend is built with FastAPI and integrates with the Alpaca Trading API.
+
+## Getting Started
+
+### Prerequisites
+
+- Node.js and npm
+- Python 3.8+
+- Alpaca API credentials (API Key and Secret)
+
+### Installation
+
+1. Clone the repository
+2. Install frontend dependencies:
+   ```
+   npm install
+   ```
+3. Install backend dependencies:
+   ```
+   cd backend
+   pip install -r requirements.txt
+   ```
+4. Create a `.env` file in the backend directory based on `.env.example` and add your Alpaca API credentials:
+   ```
+   ALPACA_API_KEY=your_api_key_here
+   ALPACA_API_SECRET=your_api_secret_here
+   ALPACA_BASE_URL=https://paper-api.alpaca.markets
+   ALPACA_DATA_URL=https://data.alpaca.markets
+   ```
+
+### Running the Application
+
+You can use the provided start script to run both the frontend and backend:
+
+```
+./start.sh
+```
+
+Or run them separately:
+
+#### Frontend
+
+```
+npm start
+```
 
 Runs the app in the development mode.\
 Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+#### Backend
+
+```
+cd backend/api
+python main.py
+```
+
+The backend server will be available at http://localhost:8000
+
+## Available Scripts
 
 ### `npm test`
 
