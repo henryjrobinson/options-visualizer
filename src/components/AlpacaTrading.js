@@ -1,8 +1,8 @@
 import React, { useState, useEffect } from 'react';
 import { DollarSign, TrendingUp, AlertCircle, Check, X, Search, Calculator } from 'lucide-react';
-import { fetchAccountInfo, placeOrder as placeOrderService } from '../services/alpacaService';
+import { fetchAccountInfo, placeOrder as placeOrderService, fetchStockData, fetchOptionsChain } from '../services/alpacaService';
 
-const AlpacaTrading = ({ selectedOption, stockSymbol }) => {
+const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSymbolChange, isSearchDisabled = false }) => {
   const [accountInfo, setAccountInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -18,6 +18,13 @@ const AlpacaTrading = ({ selectedOption, stockSymbol }) => {
   useEffect(() => {
     getAccountInfo();
   }, []);
+  
+  // Update search symbol when stockSymbol changes
+  useEffect(() => {
+    if (stockSymbol) {
+      setSearchSymbol(stockSymbol);
+    }
+  }, [stockSymbol]);
 
   // Calculate total cost whenever quantity or selected option changes
   useEffect(() => {
@@ -150,6 +157,44 @@ const AlpacaTrading = ({ selectedOption, stockSymbol }) => {
     setOrderStatus(null);
     setError(null);
   };
+  
+  // Fetch options data for a given symbol
+  const fetchOptionsData = async (symbol) => {
+    if (!symbol) return;
+    
+    setIsLoading(true);
+    setError(null);
+    
+    try {
+      // First fetch stock data to get current price
+      const stockData = await fetchStockData(symbol);
+      if (!stockData || stockData.error) {
+        throw new Error(stockData?.error || `Failed to fetch stock data for ${symbol}`);
+      }
+      
+      // Then fetch options chain
+      const optionsData = await fetchOptionsChain(symbol);
+      if (!optionsData || optionsData.error) {
+        throw new Error(optionsData?.error || `Failed to fetch options data for ${symbol}`);
+      }
+      
+      // Update the parent component with the new data
+      if (onStockSymbolChange) {
+        onStockSymbolChange(symbol);
+      }
+      
+      if (onOptionsLoaded) {
+        onOptionsLoaded(optionsData);
+      }
+      
+      console.log(`Successfully loaded options data for ${symbol}`);
+    } catch (err) {
+      console.error(`Error fetching options data for ${symbol}:`, err);
+      setError(`Failed to fetch options data for ${symbol}: ${err.message}`);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
   if (isLoading) {
     return (
@@ -169,36 +214,79 @@ const AlpacaTrading = ({ selectedOption, stockSymbol }) => {
         Alpaca Trading Integration
       </h2>
       
-      {/* Options Search */}
-      <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-        <div className="flex items-center mb-3">
-          <Search className="h-5 w-5 mr-2 text-blue-600" />
-          <h3 className="font-semibold text-blue-800">Search Options</h3>
+      {/* Options Search - Only shown if search is not disabled */}
+      {!isSearchDisabled ? (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center mb-3">
+            <Search className="h-5 w-5 mr-2 text-blue-600" />
+            <h3 className="font-semibold text-blue-800">Search Options</h3>
+          </div>
+          <div className="flex space-x-2">
+            <input
+              type="text"
+              placeholder="Enter stock symbol (e.g., AAPL)"
+              className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              value={searchSymbol}
+              onChange={(e) => setSearchSymbol(e.target.value)}
+              onKeyPress={(e) => e.key === 'Enter' && searchSymbol.trim() && fetchOptionsData(searchSymbol.trim().toUpperCase())}
+            />
+            <button
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              onClick={() => {
+                if (searchSymbol.trim()) {
+                  fetchOptionsData(searchSymbol.trim().toUpperCase());
+                }
+              }}
+              disabled={isLoading}
+            >
+              {isLoading ? (
+                <span className="flex items-center">
+                  <div className="animate-spin rounded-full h-4 w-4 border-b-2 border-white mr-2"></div>
+                  Searching...
+                </span>
+              ) : (
+                'Search'
+              )}
+            </button>
+          </div>
         </div>
-        <div className="flex space-x-2">
-          <input
-            type="text"
-            placeholder="Enter stock symbol (e.g., AAPL)"
-            className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
-            value={searchSymbol}
-            onChange={(e) => setSearchSymbol(e.target.value)}
-            onKeyPress={(e) => e.key === 'Enter' && searchSymbol.trim() && alert(`Searching for options for ${searchSymbol}...`)}
-          />
-          <button
-            className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
-            onClick={() => {
-              if (searchSymbol.trim()) {
-                // This would typically call a function to fetch options for the entered symbol
-                // For now, we'll just alert the user
-                alert(`Searching for options for ${searchSymbol}...`);
-                // In a real implementation, this would update the parent component with new options data
-              }
-            }}
-          >
-            Search
-          </button>
+      ) : (
+        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+          <div className="flex items-center mb-3">
+            <Search className="h-5 w-5 mr-2 text-blue-600" />
+            <h3 className="font-semibold text-blue-800">Trading {stockSymbol} Options</h3>
+          </div>
+          <p className="text-sm text-gray-600">Use the search bar at the top of the page to change the stock symbol.</p>
         </div>
-      </div>
+      )}
+        
+      {/* Cost Calculator */}
+        {selectedOption && (
+          <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+            <div className="flex items-center mb-2">
+              <Calculator className="h-5 w-5 mr-2 text-blue-600" />
+              <h3 className="font-semibold text-blue-800">Options Cost Calculator</h3>
+            </div>
+            <div className="grid grid-cols-2 gap-3">
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Contracts</label>
+                <input
+                  type="number"
+                  min="1"
+                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  value={quantity}
+                  onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
+                />
+              </div>
+              <div>
+                <label className="block text-sm font-medium text-gray-700 mb-1">Total Cost</label>
+                <div className="w-full border border-gray-300 bg-gray-50 rounded px-3 py-2 font-mono">
+                  ${totalCost.toFixed(2)}
+                </div>
+              </div>
+            </div>
+          </div>
+        )}
       
       {error && (
         <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-start">
