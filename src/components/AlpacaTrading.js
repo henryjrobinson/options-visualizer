@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useCallback } from 'react';
 import { DollarSign, TrendingUp, AlertCircle, Check, Search, Calculator } from 'lucide-react';
 import { fetchAccountInfo, placeOrder as placeOrderService, fetchStockData, fetchOptionsChain } from '../services/alpacaService';
 
@@ -14,32 +14,8 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
   const [searchSymbol, setSearchSymbol] = useState('');
   const [totalCost, setTotalCost] = useState(0);
 
-  // Fetch account information when component mounts
-  useEffect(() => {
-    getAccountInfo();
-  }, [getAccountInfo]);
-  
-  // Update search symbol when stockSymbol changes
-  useEffect(() => {
-    if (stockSymbol) {
-      setSearchSymbol(stockSymbol);
-    }
-  }, [stockSymbol]);
-
-  // Calculate total cost whenever quantity or selected option changes
-  useEffect(() => {
-    if (selectedOption && quantity) {
-      const price = selectedOption.lastPrice || selectedOption.last || 0;
-      // Options contracts represent 100 shares
-      const contractMultiplier = 100;
-      const total = price * quantity * contractMultiplier;
-      setTotalCost(total);
-    } else {
-      setTotalCost(0);
-    }
-  }, [selectedOption, quantity]);
-
-  const getAccountInfo = async () => {
+  // Define getAccountInfo with useCallback to prevent it from changing on every render
+  const getAccountInfo = useCallback(async () => {
     setIsLoading(true);
     setError(null);
     
@@ -84,7 +60,32 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
     } finally {
       setIsLoading(false);
     }
-  };
+  }, []);
+
+  // Fetch account information when component mounts
+  useEffect(() => {
+    getAccountInfo();
+  }, [getAccountInfo]);
+  
+  // Update search symbol when stockSymbol changes
+  useEffect(() => {
+    if (stockSymbol) {
+      setSearchSymbol(stockSymbol);
+    }
+  }, [stockSymbol]);
+
+  // Calculate total cost whenever quantity or selected option changes
+  useEffect(() => {
+    if (selectedOption && quantity) {
+      const price = selectedOption.lastPrice || selectedOption.last || 0;
+      // Options contracts represent 100 shares
+      const contractMultiplier = 100;
+      const total = price * quantity * contractMultiplier;
+      setTotalCost(total);
+    } else {
+      setTotalCost(0);
+    }
+  }, [selectedOption, quantity]);
 
   const placeOrder = async (side) => {
     if (!selectedOption) {
@@ -453,7 +454,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
           <AlertCircle className="mx-auto mb-2" size={24} />
           <p className="text-gray-700 mb-4">Unable to connect to Alpaca API</p>
           <button
-            onClick={fetchAccountInfo}
+            onClick={getAccountInfo}
             className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
           >
             Retry Connection
