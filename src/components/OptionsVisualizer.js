@@ -464,91 +464,98 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* IV Surface Analysis */}
       {optionsChain && (
-        <>
-          {/* Toggle IV Section - Condensed View */}
-          <div 
-            className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6 cursor-pointer"
-            onClick={() => setIsIVSectionExpanded(!isIVSectionExpanded)}
-          >
-            <div className="flex justify-between items-center">
-              <h2 className="text-lg font-semibold">IV Surface Analysis</h2>
-              {isIVSectionExpanded ? <ChevronUp size={20} /> : <ChevronDown size={20} />}
-            </div>
-            
-            {/* Condensed IV metrics - only shown when collapsed */}
-            {!isIVSectionExpanded && (
-              <div className="flex justify-between items-center mt-3 text-sm">
-                <div className="flex items-center">
-                  <span className="font-medium mr-1">IV30:</span> 
-                  <span className="text-blue-700">{calculateIV(30).toFixed(1)}%</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="font-medium mr-1">IV60:</span> 
-                  <span className="text-purple-700">{calculateIV(60).toFixed(1)}%</span>
-                </div>
-                <div className="flex items-center">
-                  <span className="font-medium mr-1">IV90:</span> 
-                  <span className="text-green-700">{calculateIV(90).toFixed(1)}%</span>
-                </div>
-              </div>
-            )}
+        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
+          <div className="flex justify-between items-center mb-4">
+            <h2 className="text-lg font-semibold">IV Surface Analysis</h2>
+            <button 
+              onClick={() => setIsIVSectionExpanded(!isIVSectionExpanded)}
+              className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
+            >
+              {isIVSectionExpanded ? 'Show Less' : 'Show More'} 
+              {isIVSectionExpanded ? <ChevronUp size={16} className="ml-1" /> : <ChevronDown size={16} className="ml-1" />}
+            </button>
           </div>
           
-          {/* Expanded IV Analysis */}
-          {isIVSectionExpanded && (
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-              <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-md font-semibold">IV30</h3>
-                    <span className="text-lg font-bold">{calculateIV(30).toFixed(1)}%</span>
-                  </div>
-                  <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
-                    <div 
-                      className="h-1 bg-blue-600 rounded-full" 
-                      style={{ width: `${Math.min(calculateIV(30) * 2, 100)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-blue-700">
-                    {getIVStrategyInsight()}
-                  </p>
-                </div>
-                
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-md font-semibold">IV60</h3>
-                    <span className="text-lg font-bold">{calculateIV(60).toFixed(1)}%</span>
-                  </div>
-                  <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
-                    <div 
-                      className="h-1 bg-purple-600 rounded-full" 
-                      style={{ width: `${Math.min(calculateIV(60) * 2, 100)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-purple-700">
-                    {getIV60StrategyInsight()}
-                  </p>
-                </div>
-                
-                <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-                  <div className="flex justify-between items-center mb-2">
-                    <h3 className="text-md font-semibold">IV90</h3>
-                    <span className="text-lg font-bold">{calculateIV(90).toFixed(1)}%</span>
-                  </div>
-                  <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
-                    <div 
-                      className="h-1 bg-green-600 rounded-full" 
-                      style={{ width: `${Math.min(calculateIV(90) * 2, 100)}%` }}
-                    ></div>
-                  </div>
-                  <p className="text-sm text-green-700">
-                    {getIV90StrategyInsight()}
-                  </p>
-                </div>
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-md font-semibold">IV30</h3>
+                <span className="text-lg font-bold">{calculateIV(30).toFixed(1)}%</span>
               </div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+                <div 
+                  className="h-1 bg-blue-600 rounded-full" 
+                  style={{ width: `${Math.min(calculateIV(30) * 2, 100)}%` }}
+                ></div>
+              </div>
+              {isIVSectionExpanded && (
+                <p className="text-sm text-blue-700 mt-2">
+                  {getIVStrategyInsight()}
+                </p>
+              )}
+              {!isIVSectionExpanded && (
+                <button 
+                  onClick={() => setIsIVSectionExpanded(true)}
+                  className="text-blue-600 hover:text-blue-800 text-xs mt-1"
+                >
+                  View strategy insights
+                </button>
+              )}
             </div>
-          )}
-        </>
+            
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-md font-semibold">IV60</h3>
+                <span className="text-lg font-bold">{calculateIV(60).toFixed(1)}%</span>
+              </div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+                <div 
+                  className="h-1 bg-purple-600 rounded-full" 
+                  style={{ width: `${Math.min(calculateIV(60) * 2, 100)}%` }}
+                ></div>
+              </div>
+              {isIVSectionExpanded && (
+                <p className="text-sm text-purple-700 mt-2">
+                  {getIV60StrategyInsight()}
+                </p>
+              )}
+              {!isIVSectionExpanded && (
+                <button 
+                  onClick={() => setIsIVSectionExpanded(true)}
+                  className="text-purple-600 hover:text-purple-800 text-xs mt-1"
+                >
+                  View strategy insights
+                </button>
+              )}
+            </div>
+            
+            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
+              <div className="flex justify-between items-center mb-2">
+                <h3 className="text-md font-semibold">IV90</h3>
+                <span className="text-lg font-bold">{calculateIV(90).toFixed(1)}%</span>
+              </div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+                <div 
+                  className="h-1 bg-green-600 rounded-full" 
+                  style={{ width: `${Math.min(calculateIV(90) * 2, 100)}%` }}
+                ></div>
+              </div>
+              {isIVSectionExpanded && (
+                <p className="text-sm text-green-700 mt-2">
+                  {getIV90StrategyInsight()}
+                </p>
+              )}
+              {!isIVSectionExpanded && (
+                <button 
+                  onClick={() => setIsIVSectionExpanded(true)}
+                  className="text-green-600 hover:text-green-800 text-xs mt-1"
+                >
+                  View strategy insights
+                </button>
+              )}
+            </div>
+          </div>
+        </div>
       )}
       
       {/* Main Option Visual - Only show when an option is selected */}
