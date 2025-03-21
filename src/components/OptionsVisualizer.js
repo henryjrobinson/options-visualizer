@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import { ChevronDown, ChevronUp, Clock, DollarSign, Percent, TrendingUp } from 'lucide-react';
 
 const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData, isLoading }) => {
   // Stock and options state
@@ -24,10 +23,9 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
   });
   
   // UI state
-  const [error, setError] = useState(null);
   const [optionsChain, setOptionsChain] = useState(null);
   const [selectedExpiry, setSelectedExpiry] = useState(null);
-  const [selectedType, setSelectedType] = useState('Call');
+  const [selectedType] = useState('Call');
   
   // Update local state when props change
   useEffect(() => {
@@ -126,10 +124,10 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       }
       
       // Don't automatically select an option - let the user choose from the options chain
-      setError(null);
+      // setError(null);
     } catch (err) {
       console.error('Error processing options data:', err);
-      setError(`Failed to process options data: ${err.message}`);
+      // setError(`Failed to process options data: ${err.message}`);
     }
   };
   

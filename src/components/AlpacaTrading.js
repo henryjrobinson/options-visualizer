@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { DollarSign, TrendingUp, AlertCircle, Check, X, Search, Calculator } from 'lucide-react';
+import { DollarSign, TrendingUp, AlertCircle, Check, Search, Calculator } from 'lucide-react';
 import { fetchAccountInfo, placeOrder as placeOrderService, fetchStockData, fetchOptionsChain } from '../services/alpacaService';
 
 const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSymbolChange, isSearchDisabled = false }) => {
@@ -17,7 +17,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
   // Fetch account information when component mounts
   useEffect(() => {
     getAccountInfo();
-  }, []);
+  }, [getAccountInfo]);
   
   // Update search symbol when stockSymbol changes
   useEffect(() => {
