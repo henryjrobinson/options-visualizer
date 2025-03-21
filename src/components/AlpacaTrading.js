@@ -60,7 +60,8 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
     } finally {
       setIsLoading(false);
     }
-  }, []);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []); // Adding accountInfo would cause unnecessary re-renders, so we disable the lint rule
 
   // Fetch account information when component mounts
   useEffect(() => {

@@ -72,7 +72,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         console.log('No expirations found in options chain');
       }
     }
-  }, [optionsChain]);
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [optionsChain]); // Disabling the lint rule as getIVTermStructureData would cause a circular dependency
 
   // Calculate important metrics
   const daysToExpiration = (() => {
@@ -372,6 +373,187 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         isLowIV: iv < lowIVThreshold
       };
     });
+  };
+
+  // Render the IV term structure chart
+  const renderIVTermStructureChart = () => {
+    const data = getIVTermStructureData();
+    
+    if (!data || data.length === 0) {
+      return (
+        <div className="p-4 text-center text-gray-500">
+          <p>No IV term structure data available. Try selecting a different stock with more active options.</p>
+        </div>
+      );
+    }
+    
+    // Calculate chart dimensions and spacing
+    const chartHeight = 200;
+    const barWidth = 30;
+    const groupWidth = 120;
+    const chartWidth = data.length * groupWidth;
+    
+    // Historical average and thresholds
+    const historicalAvgIV = 25; // Default historical average IV (%)
+    const highIVThreshold = historicalAvgIV * 1.2; // 20% above historical average
+    const lowIVThreshold = historicalAvgIV * 0.8; // 20% below historical average
+    
+    // Find the maximum IV value for scaling
+    const maxIV = Math.max(
+      ...data.map(item => Math.max(item.iv, item.iv60, item.iv90, highIVThreshold)),
+      40 // Minimum scale to ensure visibility
+    );
+    
+    // Scale factor to convert IV values to pixel heights
+    const scaleY = chartHeight / maxIV;
+    
+    return (
+      <div className="mt-4 overflow-x-auto">
+        <div className="flex items-center mb-2 text-xs">
+          <div className="flex items-center mr-4">
+            <div className="w-3 h-3 bg-green-500 mr-1"></div>
+            <span>High IV - Good for SELLING premium</span>
+          </div>
+          <div className="flex items-center mr-4">
+            <div className="w-3 h-3 bg-blue-500 mr-1"></div>
+            <span>Low IV - Good for BUYING options</span>
+          </div>
+          <div className="flex items-center">
+            <div className="w-3 h-3 bg-purple-500 mr-1"></div>
+            <span>IV60 (60-day)</span>
+          </div>
+          <div className="flex items-center ml-4">
+            <div className="w-3 h-3 bg-pink-500 mr-1"></div>
+            <span>IV90 (90-day)</span>
+          </div>
+        </div>
+        
+        <div className="relative" style={{ width: `${chartWidth}px`, minWidth: '100%', height: `${chartHeight + 150}px` }}>
+          {/* Chart axes and grid lines */}
+          <div className="absolute left-0 top-0 h-full border-l border-gray-300"></div>
+          <div className="absolute left-0 bottom-0 w-full border-b border-gray-300"></div>
+          
+          {/* Horizontal grid lines and labels */}
+          {[0, 25, 50, 75, 100].map(percent => {
+            const y = chartHeight - (percent * scaleY);
+            if (y < 0) return null; // Skip if outside chart area
+            
+            return (
+              <div key={`grid-${percent}`} className="absolute left-0 w-full" style={{ bottom: `${y}px` }}>
+                <div className="border-t border-gray-200 w-full"></div>
+                <div className="absolute -left-8 -top-2 text-xs text-gray-500">{percent}%</div>
+              </div>
+            );
+          })}
+          
+          {/* Historical average line */}
+          <div 
+            className="absolute left-0 w-full border-t border-gray-400 border-dashed z-10" 
+            style={{ bottom: `${historicalAvgIV * scaleY}px` }}
+          >
+            <div className="absolute right-0 -top-3 text-xs text-gray-600 bg-white px-1">
+              Historical Avg IV ({historicalAvgIV}%)
+            </div>
+          </div>
+          
+          {/* High IV threshold line */}
+          <div 
+            className="absolute left-0 w-full border-t border-red-300 border-dashed z-10" 
+            style={{ bottom: `${highIVThreshold * scaleY}px` }}
+          >
+            <div className="absolute right-0 -top-3 text-xs text-red-500 bg-white px-1">
+              High IV ({highIVThreshold.toFixed(1)}%)
+            </div>
+          </div>
+          
+          {/* Low IV threshold line */}
+          <div 
+            className="absolute left-0 w-full border-t border-blue-300 border-dashed z-10" 
+            style={{ bottom: `${lowIVThreshold * scaleY}px` }}
+          >
+            <div className="absolute right-0 -top-3 text-xs text-blue-500 bg-white px-1">
+              Low IV ({lowIVThreshold.toFixed(1)}%)
+            </div>
+          </div>
+          
+          {/* Bars for each expiration date */}
+          {data.map((item, index) => {
+            const x = index * groupWidth + 40; // Add padding for labels
+            const ivHeight = item.iv * scaleY;
+            const iv60Height = item.iv60 * scaleY;
+            const iv90Height = item.iv90 * scaleY;
+            
+            // Determine bar color based on IV level
+            let barColor = "bg-gray-400"; // Default neutral color
+            if (item.isHighIV) {
+              barColor = "bg-green-500"; // High IV - good for selling
+            } else if (item.isLowIV) {
+              barColor = "bg-blue-500"; // Low IV - good for buying
+            }
+            
+            return (
+              <div key={`bar-group-${index}`} className="absolute" style={{ left: `${x}px`, bottom: '0' }}>
+                {/* Main IV bar */}
+                <div className="relative">
+                  <div 
+                    className={`w-${barWidth} ${barColor} absolute bottom-0 rounded-t`} 
+                    style={{ width: `${barWidth}px`, height: `${ivHeight}px`, left: '0px' }}
+                  >
+                    {/* Buy/Sell indicator */}
+                    {item.isHighIV && (
+                      <div className="absolute -top-6 left-0 w-full text-center text-xs font-bold text-green-700 bg-green-100 rounded px-1 py-0.5">
+                        SELL
+                      </div>
+                    )}
+                    {item.isLowIV && (
+                      <div className="absolute -top-6 left-0 w-full text-center text-xs font-bold text-blue-700 bg-blue-100 rounded px-1 py-0.5">
+                        BUY
+                      </div>
+                    )}
+                    
+                    {/* IV value label */}
+                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
+                      {item.iv.toFixed(1)}%
+                    </div>
+                  </div>
+                  
+                  {/* IV60 bar */}
+                  <div 
+                    className="w-5 bg-purple-500 absolute bottom-0 rounded-t" 
+                    style={{ width: `${barWidth/2}px`, height: `${iv60Height}px`, left: `${barWidth + 5}px` }}
+                  >
+                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
+                      {item.iv60.toFixed(1)}%
+                    </div>
+                  </div>
+                  
+                  {/* IV90 bar */}
+                  <div 
+                    className="w-5 bg-pink-500 absolute bottom-0 rounded-t" 
+                    style={{ width: `${barWidth/2}px`, height: `${iv90Height}px`, left: `${barWidth + 5 + barWidth/2 + 5}px` }}
+                  >
+                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
+                      {item.iv90.toFixed(1)}%
+                    </div>
+                  </div>
+                </div>
+                
+                {/* X-axis label (date) */}
+                <div className="absolute bottom-0 left-0 w-full text-center" style={{ width: `${barWidth * 2 + 10}px` }}>
+                  <div className="pt-2 text-xs font-medium">{item.displayDate}</div>
+                  <div className={`mt-1 text-xs px-1 py-0.5 rounded ${item.strategyColor}`}>
+                    {item.strategy}
+                  </div>
+                  <div className="mt-1 text-xs text-gray-600 max-w-[110px]">
+                    {item.strategyDetail}
+                  </div>
+                </div>
+              </div>
+            );
+          })}
+        </div>
+      </div>
+    );
   };
 
   const calculateIV = (days) => {
@@ -778,118 +960,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           {isIVSectionExpanded && (
             <div className="mt-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
               <h3 className="text-md font-semibold mb-4">IV Term Structure</h3>
-              
-              <div className="flex flex-wrap items-center mb-4 text-xs space-x-4">
-                <div className="flex items-center mb-1">
-                  <div className="w-3 h-3 bg-green-500 rounded-sm mr-1"></div>
-                  <span>High IV - Good for SELLING premium</span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <div className="w-3 h-3 bg-blue-500 rounded-sm mr-1"></div>
-                  <span>Low IV - Good for BUYING options</span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <div className="w-3 h-3 bg-purple-500 rounded-sm mr-1"></div>
-                  <span>IV60 (60-day)</span>
-                </div>
-                <div className="flex items-center mb-1">
-                  <div className="w-3 h-3 bg-pink-500 rounded-sm mr-1"></div>
-                  <span>IV90 (90-day)</span>
-                </div>
-              </div>
-              
-              {getIVTermStructureData().length > 0 ? (
-                <>
-                  <div className="flex justify-between mb-2">
-                    {getIVTermStructureData().map((data, index) => (
-                      <div key={index} className="text-xs text-center" style={{ width: '22%' }}>
-                        <span className="font-bold">{data.iv.toFixed(1)}%</span>
-                        <span className="mx-1">|</span>
-                        <span>{data.iv60.toFixed(1)}%</span>
-                        <span className="mx-1">|</span>
-                        <span>{data.iv90.toFixed(1)}%</span>
-                      </div>
-                    ))}
-                  </div>
-                  
-                  <div className="relative h-48 mb-4">
-                    {/* Historical average IV line */}
-                    <div className="absolute w-full border-t border-gray-400 z-10" style={{ top: '50%' }}>
-                      <span className="absolute right-0 -top-3 text-xs text-gray-600">Historical Avg IV (25%)</span>
-                    </div>
-                    
-                    {/* High IV threshold line */}
-                    <div className="absolute w-full border-t border-dashed border-red-400 z-10" style={{ top: '30%' }}>
-                      <span className="absolute right-0 -top-3 text-xs text-red-500">High IV (30%)</span>
-                    </div>
-                    
-                    {/* Low IV threshold line */}
-                    <div className="absolute w-full border-t border-dashed border-blue-400 z-10" style={{ top: '70%' }}>
-                      <span className="absolute right-0 -top-3 text-xs text-blue-500">Low IV (20%)</span>
-                    </div>
-                    
-                    {/* Chart bars */}
-                    <div className="flex justify-between h-full">
-                      {getIVTermStructureData().map((data, index) => (
-                        <div key={index} className="flex items-end justify-center" style={{ width: '22%' }}>
-                          <div className="flex items-end space-x-1">
-                            {/* IV bar */}
-                            <div 
-                              className="w-5 relative" 
-                              style={{ 
-                                height: `${Math.min(data.iv * 2, 100)}%`,
-                                backgroundColor: data.isHighIV ? '#10B981' : data.isLowIV ? '#3B82F6' : '#9CA3AF'
-                              }}
-                            >
-                              {data.isHighIV && (
-                                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs font-bold text-green-600">
-                                  SELL
-                                </div>
-                              )}
-                              {data.isLowIV && (
-                                <div className="absolute -top-5 left-1/2 transform -translate-x-1/2 text-xs font-bold text-blue-600">
-                                  BUY
-                                </div>
-                              )}
-                            </div>
-                            
-                            {/* IV60 bar */}
-                            <div 
-                              className="w-5 bg-purple-500" 
-                              style={{ height: `${Math.min(data.iv60 * 2, 100)}%` }}
-                            ></div>
-                            
-                            {/* IV90 bar */}
-                            <div 
-                              className="w-5 bg-pink-500" 
-                              style={{ height: `${Math.min(data.iv90 * 2, 100)}%` }}
-                            ></div>
-                          </div>
-                        </div>
-                      ))}
-                    </div>
-                  </div>
-                  
-                  <div className="flex justify-between">
-                    {getIVTermStructureData().map((data, index) => (
-                      <div key={index} className="text-center" style={{ width: '22%' }}>
-                        <div className="text-xs font-medium mb-1">{data.displayDate}</div>
-                        <div className={`text-xs py-1 px-2 rounded-md ${data.strategyColor} font-medium`}>
-                          {data.strategy}
-                        </div>
-                        <div className="text-xs mt-1 text-gray-600">
-                          {data.strategyDetail}
-                        </div>
-                      </div>
-                    ))}
-                  </div>
-                </>
-              ) : (
-                <div className="bg-yellow-50 p-4 rounded-lg border border-yellow-200 text-center">
-                  <p className="text-yellow-700">No options data available for IV term structure visualization.</p>
-                  <p className="text-yellow-600 text-sm mt-1">Try selecting a different stock or expiration date.</p>
-                </div>
-              )}
+              {renderIVTermStructureChart()}
             </div>
           )}
         </div>
