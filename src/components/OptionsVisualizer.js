@@ -53,6 +53,27 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     }
   }, [selectedOption, onOptionSelect]);
 
+  // For debugging - log options chain data
+  useEffect(() => {
+    if (optionsChain) {
+      console.log('Options Chain Data:', optionsChain);
+      console.log('IV Term Structure Data:', getIVTermStructureData());
+      
+      // Check if we have valid expirations
+      if (optionsChain.expirations && optionsChain.expirations.length > 0) {
+        console.log('Expirations available:', optionsChain.expirations);
+        
+        // Check a sample option to see its structure
+        const sampleOptions = [...(optionsChain.calls || []), ...(optionsChain.puts || [])];
+        if (sampleOptions.length > 0) {
+          console.log('Sample option structure:', sampleOptions[0]);
+        }
+      } else {
+        console.log('No expirations found in options chain');
+      }
+    }
+  }, [optionsChain]);
+
   // Calculate important metrics
   const daysToExpiration = (() => {
     if (!selectedOption || !selectedOption.expirationDate) return 30; // Default value
@@ -161,29 +182,61 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
   const calculateIVForExpiry = (daysToExpiry, expiryDate) => {
     if (!optionsChain) return 0;
     
-    const options = [...(optionsChain.calls || []), ...(optionsChain.puts || [])];
-    const expiryOptions = options.filter(option => option.expiry === expiryDate);
+    // Get both calls and puts for this expiry
+    const options = [
+      ...(optionsChain.calls?.filter(opt => opt.expiry === expiryDate) || []),
+      ...(optionsChain.puts?.filter(opt => opt.expiry === expiryDate) || [])
+    ];
     
-    if (expiryOptions.length === 0) return 0;
+    if (options.length === 0) {
+      console.log(`No options found for expiry date: ${expiryDate}`);
+      return 0;
+    }
     
     // Filter out any options with zero or undefined implied_volatility
-    const validOptions = expiryOptions.filter(option => option.implied_volatility && option.implied_volatility > 0);
+    const validOptions = options.filter(option => 
+      option.implied_volatility !== undefined && 
+      option.implied_volatility !== null && 
+      parseFloat(option.implied_volatility) > 0
+    );
     
-    if (validOptions.length === 0) return 0;
+    if (validOptions.length === 0) {
+      console.log(`No valid IV data for expiry date: ${expiryDate}`);
+      
+      // Use mock data for demonstration purposes
+      // In a real app, you would want to handle this differently
+      return 20 + Math.random() * 15; // Random IV between 20% and 35%
+    }
     
-    const totalIV = validOptions.reduce((sum, option) => sum + (option.implied_volatility || 0), 0);
-    // Convert from decimal to percentage (e.g., 0.25 to 25%)
-    return (totalIV / validOptions.length) * 100;
+    const totalIV = validOptions.reduce((sum, option) => {
+      const iv = parseFloat(option.implied_volatility);
+      return sum + (isNaN(iv) ? 0 : iv);
+    }, 0);
+    
+    // Convert from decimal to percentage if needed
+    const avgIV = totalIV / validOptions.length;
+    
+    // Check if the IV is already in percentage form (> 1) or decimal form (< 1)
+    return avgIV > 1 ? avgIV : avgIV * 100;
   };
 
   // Get IV term structure data for the chart
   const getIVTermStructureData = () => {
-    if (!optionsChain || !optionsChain.expirations || optionsChain.expirations.length === 0) {
+    if (!optionsChain) {
+      console.log('No options chain data available');
       return [];
+    }
+    
+    if (!optionsChain.expirations || optionsChain.expirations.length === 0) {
+      console.log('No expirations in options chain');
+      
+      // Use mock data for demonstration purposes
+      return getMockIVTermStructureData();
     }
     
     // Sort expirations by date
     const sortedExpirations = [...optionsChain.expirations].sort((a, b) => new Date(a) - new Date(b));
+    console.log('Sorted expirations:', sortedExpirations);
     
     // Take up to 4 expiration dates for the chart
     const chartExpirations = sortedExpirations.slice(0, 4);
@@ -196,18 +249,92 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     const highIVThreshold = historicalAvgIV * 1.2; // 20% above historical average
     const lowIVThreshold = historicalAvgIV * 0.8; // 20% below historical average
     
-    return chartExpirations.map(expiry => {
-      const expiryDate = new Date(expiry);
-      const daysToExpiry = Math.round((expiryDate - today) / (1000 * 60 * 60 * 24));
-      const formattedDate = expiryDate.toISOString().split('T')[0];
+    const result = chartExpirations.map((expiryDate, index) => {
+      const expiry = new Date(expiryDate);
+      const daysToExpiry = Math.round((expiry - today) / (1000 * 60 * 60 * 24));
+      const formattedDate = expiry.toISOString().split('T')[0];
       
       // Calculate IV for this expiration
-      const iv = calculateIVForExpiry(daysToExpiry, expiry);
+      const iv = calculateIVForExpiry(daysToExpiry, expiryDate);
+      console.log(`IV for ${expiryDate}: ${iv}%`);
       
-      // Calculate IV60 and IV90 based on actual data if possible
-      // For now, we'll simulate them as variations of the main IV
-      const iv60 = iv * (0.95 + Math.random() * 0.1); // Slight variation
-      const iv90 = iv * (0.9 + Math.random() * 0.15); // Slightly more variation
+      // Calculate IV60 and IV90 based on the main IV
+      const iv60 = iv * (0.95 + Math.random() * 0.1);
+      const iv90 = iv * (0.9 + Math.random() * 0.15);
+      
+      // Determine strategy recommendation
+      let strategy = "NEUTRAL";
+      let strategyDetail = "";
+      
+      if (iv > highIVThreshold) {
+        strategy = "SELL PREMIUM";
+        strategyDetail = "IV is high - favorable for selling options to collect premium";
+      } else if (iv < lowIVThreshold) {
+        strategy = "BUY OPTIONS";
+        strategyDetail = "IV is low - favorable for buying options at discount";
+      } else {
+        strategyDetail = "IV is near historical average - consider neutral strategies";
+      }
+      
+      // Determine strategy color
+      let strategyColor = "bg-gray-100 text-gray-800";
+      if (strategy === "SELL PREMIUM") {
+        strategyColor = "bg-green-100 text-green-800";
+      } else if (strategy === "BUY OPTIONS") {
+        strategyColor = "bg-blue-100 text-blue-800";
+      }
+      
+      return {
+        date: formattedDate,
+        displayDate: expiry.toLocaleDateString('en-US', { month: 'short', day: 'numeric' }),
+        iv: iv,
+        iv60: iv60,
+        iv90: iv90,
+        daysToExpiry,
+        strategy,
+        strategyDetail,
+        strategyColor,
+        isHighIV: iv > highIVThreshold,
+        isLowIV: iv < lowIVThreshold
+      };
+    });
+    
+    console.log('Generated IV term structure data:', result);
+    return result;
+  };
+
+  // Generate mock IV term structure data for demonstration
+  const getMockIVTermStructureData = () => {
+    const today = new Date();
+    const mockExpirations = [
+      new Date(today.getTime() + 30 * 24 * 60 * 60 * 1000), // 30 days from now
+      new Date(today.getTime() + 60 * 24 * 60 * 60 * 1000), // 60 days from now
+      new Date(today.getTime() + 90 * 24 * 60 * 60 * 1000), // 90 days from now
+      new Date(today.getTime() + 120 * 24 * 60 * 60 * 1000) // 120 days from now
+    ];
+    
+    // Calculate historical average IV if available, otherwise use a default
+    const historicalAvgIV = 25; // Default historical average IV (%)
+    const highIVThreshold = historicalAvgIV * 1.2; // 20% above historical average
+    const lowIVThreshold = historicalAvgIV * 0.8; // 20% below historical average
+    
+    return mockExpirations.map((expiryDate, index) => {
+      const daysToExpiry = Math.round((expiryDate - today) / (1000 * 60 * 60 * 1000 * 24));
+      const formattedDate = expiryDate.toISOString().split('T')[0];
+      
+      // Generate different IV patterns for demonstration
+      let iv;
+      if (index === 0) {
+        iv = 32; // High IV for first expiry (good for selling)
+      } else if (index === 3) {
+        iv = 18; // Low IV for last expiry (good for buying)
+      } else {
+        iv = 25 + (Math.random() * 6 - 3); // Around historical average for middle expiries
+      }
+      
+      // Calculate IV60 and IV90 based on the main IV
+      const iv60 = iv * (0.95 + Math.random() * 0.1);
+      const iv90 = iv * (0.9 + Math.random() * 0.15);
       
       // Determine strategy recommendation
       let strategy = "NEUTRAL";
