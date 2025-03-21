@@ -387,34 +387,20 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       );
     }
     
-    // Calculate chart dimensions and spacing
-    const chartHeight = 200;
-    const barWidth = 30;
-    const groupWidth = 120;
-    const chartWidth = data.length * groupWidth;
-    
     // Historical average and thresholds
     const historicalAvgIV = 25; // Default historical average IV (%)
     const highIVThreshold = historicalAvgIV * 1.2; // 20% above historical average
     const lowIVThreshold = historicalAvgIV * 0.8; // 20% below historical average
     
-    // Find the maximum IV value for scaling
-    const maxIV = Math.max(
-      ...data.map(item => Math.max(item.iv, item.iv60, item.iv90, highIVThreshold)),
-      40 // Minimum scale to ensure visibility
-    );
-    
-    // Scale factor to convert IV values to pixel heights
-    const scaleY = chartHeight / maxIV;
-    
     return (
-      <div className="mt-4 overflow-x-auto">
-        <div className="flex items-center mb-2 text-xs">
-          <div className="flex items-center mr-4">
+      <div className="mt-4">
+        {/* Legend */}
+        <div className="flex flex-wrap items-center mb-4 text-xs gap-4">
+          <div className="flex items-center">
             <div className="w-3 h-3 bg-green-500 mr-1"></div>
             <span>High IV - Good for SELLING premium</span>
           </div>
-          <div className="flex items-center mr-4">
+          <div className="flex items-center">
             <div className="w-3 h-3 bg-blue-500 mr-1"></div>
             <span>Low IV - Good for BUYING options</span>
           </div>
@@ -422,129 +408,96 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             <div className="w-3 h-3 bg-purple-500 mr-1"></div>
             <span>IV60 (60-day)</span>
           </div>
-          <div className="flex items-center ml-4">
+          <div className="flex items-center">
             <div className="w-3 h-3 bg-pink-500 mr-1"></div>
             <span>IV90 (90-day)</span>
           </div>
         </div>
         
-        <div className="relative" style={{ width: `${chartWidth}px`, minWidth: '100%', height: `${chartHeight + 150}px` }}>
-          {/* Chart axes and grid lines */}
-          <div className="absolute left-0 top-0 h-full border-l border-gray-300"></div>
-          <div className="absolute left-0 bottom-0 w-full border-b border-gray-300"></div>
-          
-          {/* Horizontal grid lines and labels */}
-          {[0, 25, 50, 75, 100].map(percent => {
-            const y = chartHeight - (percent * scaleY);
-            if (y < 0) return null; // Skip if outside chart area
-            
-            return (
-              <div key={`grid-${percent}`} className="absolute left-0 w-full" style={{ bottom: `${y}px` }}>
-                <div className="border-t border-gray-200 w-full"></div>
-                <div className="absolute -left-8 -top-2 text-xs text-gray-500">{percent}%</div>
-              </div>
-            );
-          })}
-          
-          {/* Historical average line */}
-          <div 
-            className="absolute left-0 w-full border-t border-gray-400 border-dashed z-10" 
-            style={{ bottom: `${historicalAvgIV * scaleY}px` }}
-          >
-            <div className="absolute right-0 -top-3 text-xs text-gray-600 bg-white px-1">
-              Historical Avg IV ({historicalAvgIV}%)
-            </div>
+        {/* Threshold lines */}
+        <div className="relative mb-2">
+          <div className="border-b border-dashed border-red-300 w-full pb-1">
+            <span className="absolute right-0 text-xs text-red-500">High IV ({highIVThreshold.toFixed(1)}%)</span>
           </div>
-          
-          {/* High IV threshold line */}
-          <div 
-            className="absolute left-0 w-full border-t border-red-300 border-dashed z-10" 
-            style={{ bottom: `${highIVThreshold * scaleY}px` }}
-          >
-            <div className="absolute right-0 -top-3 text-xs text-red-500 bg-white px-1">
-              High IV ({highIVThreshold.toFixed(1)}%)
-            </div>
+        </div>
+        
+        <div className="relative mb-2 mt-4">
+          <div className="border-b border-gray-400 w-full pb-1">
+            <span className="absolute right-0 text-xs text-gray-600">Historical Avg IV ({historicalAvgIV}%)</span>
           </div>
-          
-          {/* Low IV threshold line */}
-          <div 
-            className="absolute left-0 w-full border-t border-blue-300 border-dashed z-10" 
-            style={{ bottom: `${lowIVThreshold * scaleY}px` }}
-          >
-            <div className="absolute right-0 -top-3 text-xs text-blue-500 bg-white px-1">
-              Low IV ({lowIVThreshold.toFixed(1)}%)
-            </div>
+        </div>
+        
+        <div className="relative mb-6 mt-4">
+          <div className="border-b border-dashed border-blue-300 w-full pb-1">
+            <span className="absolute right-0 text-xs text-blue-500">Low IV ({lowIVThreshold.toFixed(1)}%)</span>
           </div>
-          
-          {/* Bars for each expiration date */}
+        </div>
+        
+        {/* Bar chart using CSS grid for better alignment */}
+        <div className="grid grid-cols-4 gap-4">
           {data.map((item, index) => {
-            const x = index * groupWidth + 40; // Add padding for labels
-            const ivHeight = item.iv * scaleY;
-            const iv60Height = item.iv60 * scaleY;
-            const iv90Height = item.iv90 * scaleY;
-            
             // Determine bar color based on IV level
             let barColor = "bg-gray-400"; // Default neutral color
+            let labelColor = "bg-gray-100 text-gray-800";
+            let labelText = "NEUTRAL";
+            
             if (item.isHighIV) {
               barColor = "bg-green-500"; // High IV - good for selling
+              labelColor = "bg-green-100 text-green-800";
+              labelText = "SELL";
             } else if (item.isLowIV) {
               barColor = "bg-blue-500"; // Low IV - good for buying
+              labelColor = "bg-blue-100 text-blue-800";
+              labelText = "BUY";
             }
             
             return (
-              <div key={`bar-group-${index}`} className="absolute" style={{ left: `${x}px`, bottom: '0' }}>
-                {/* Main IV bar */}
-                <div className="relative">
-                  <div 
-                    className={`w-${barWidth} ${barColor} absolute bottom-0 rounded-t`} 
-                    style={{ width: `${barWidth}px`, height: `${ivHeight}px`, left: '0px' }}
-                  >
-                    {/* Buy/Sell indicator */}
-                    {item.isHighIV && (
-                      <div className="absolute -top-6 left-0 w-full text-center text-xs font-bold text-green-700 bg-green-100 rounded px-1 py-0.5">
-                        SELL
+              <div key={index} className="flex flex-col items-center">
+                {/* Strategy label */}
+                <div className={`text-xs font-bold mb-2 px-2 py-1 rounded ${labelColor}`}>
+                  {labelText}
+                </div>
+                
+                {/* Bar group */}
+                <div className="flex items-end h-40 mb-2 gap-1">
+                  {/* Main IV bar */}
+                  <div className="flex flex-col items-center">
+                    <div className={`w-8 ${barColor} rounded-t relative`} 
+                         style={{ height: `${Math.min(item.iv * 2.5, 100)}%` }}>
+                      <div className="absolute -top-5 w-full text-center text-xs font-semibold text-white">
+                        {item.iv.toFixed(1)}%
                       </div>
-                    )}
-                    {item.isLowIV && (
-                      <div className="absolute -top-6 left-0 w-full text-center text-xs font-bold text-blue-700 bg-blue-100 rounded px-1 py-0.5">
-                        BUY
-                      </div>
-                    )}
-                    
-                    {/* IV value label */}
-                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
-                      {item.iv.toFixed(1)}%
                     </div>
                   </div>
                   
                   {/* IV60 bar */}
-                  <div 
-                    className="w-5 bg-purple-500 absolute bottom-0 rounded-t" 
-                    style={{ width: `${barWidth/2}px`, height: `${iv60Height}px`, left: `${barWidth + 5}px` }}
-                  >
-                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
-                      {item.iv60.toFixed(1)}%
+                  <div className="flex flex-col items-center">
+                    <div className="w-4 bg-purple-500 rounded-t relative" 
+                         style={{ height: `${Math.min(item.iv60 * 2.5, 100)}%` }}>
+                      <div className="absolute -top-5 w-full text-center text-xs font-semibold text-white">
+                        {item.iv60.toFixed(1)}%
+                      </div>
                     </div>
                   </div>
                   
                   {/* IV90 bar */}
-                  <div 
-                    className="w-5 bg-pink-500 absolute bottom-0 rounded-t" 
-                    style={{ width: `${barWidth/2}px`, height: `${iv90Height}px`, left: `${barWidth + 5 + barWidth/2 + 5}px` }}
-                  >
-                    <div className="absolute -top-3 w-full text-center text-xs font-semibold text-white">
-                      {item.iv90.toFixed(1)}%
+                  <div className="flex flex-col items-center">
+                    <div className="w-4 bg-pink-500 rounded-t relative" 
+                         style={{ height: `${Math.min(item.iv90 * 2.5, 100)}%` }}>
+                      <div className="absolute -top-5 w-full text-center text-xs font-semibold text-white">
+                        {item.iv90.toFixed(1)}%
+                      </div>
                     </div>
                   </div>
                 </div>
                 
-                {/* X-axis label (date) */}
-                <div className="absolute bottom-0 left-0 w-full text-center" style={{ width: `${barWidth * 2 + 10}px` }}>
-                  <div className="pt-2 text-xs font-medium">{item.displayDate}</div>
-                  <div className={`mt-1 text-xs px-1 py-0.5 rounded ${item.strategyColor}`}>
+                {/* Date and strategy info */}
+                <div className="text-center">
+                  <div className="text-xs font-medium">{item.displayDate}</div>
+                  <div className={`mt-1 text-xs px-2 py-1 rounded ${item.strategyColor}`}>
                     {item.strategy}
                   </div>
-                  <div className="mt-1 text-xs text-gray-600 max-w-[110px]">
+                  <div className="mt-1 text-xs text-gray-600 max-w-[120px] text-center">
                     {item.strategyDetail}
                   </div>
                 </div>
