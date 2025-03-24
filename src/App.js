@@ -2,8 +2,8 @@ import './App.css';
 import { useState, useEffect } from 'react';
 import OptionsVisualizer from './components/OptionsVisualizer';
 import AlpacaTrading from './components/AlpacaTrading';
-import { fetchOptionsChain, fetchStockData, isMockDataEnabled } from './services/alpacaService';
-import { Search, RefreshCw, AlertTriangle } from 'lucide-react';
+import { fetchOptionsChain, fetchStockData } from './services/alpacaService';
+import { Search, RefreshCw } from 'lucide-react';
 
 function App() {
   // Main application state
