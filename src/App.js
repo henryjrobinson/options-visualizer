@@ -70,17 +70,6 @@ function App() {
     <div className="App">
       <div className="min-h-screen bg-gray-100 py-8">
         <div className="w-full max-w-[1400px] mx-auto px-4">
-          {/* Mock Data Banner */}
-          {isMockDataEnabled() && (
-            <div className="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4 mb-6 rounded shadow-md flex items-center">
-              <AlertTriangle className="h-5 w-5 mr-2 flex-shrink-0" />
-              <div>
-                <p className="font-bold">Using Mock Data</p>
-                <p className="text-sm">This application is currently using simulated market data for demonstration purposes.</p>
-              </div>
-            </div>
-          )}
-          
           <h1 className="text-3xl font-bold text-center mb-6">Options Trading Visualizer</h1>
           
           {/* Global Search Bar */}
@@ -117,12 +106,6 @@ function App() {
             {error && (
               <div className="mt-3 text-sm text-red-600">
                 {error}
-              </div>
-            )}
-            
-            {stockSymbol && !isLoading && !error && (
-              <div className="mt-3 text-sm text-green-600">
-                Showing options data for <span className="font-semibold">{stockSymbol}</span>
               </div>
             )}
           </div>

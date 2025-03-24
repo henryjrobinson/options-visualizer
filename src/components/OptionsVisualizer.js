@@ -242,9 +242,6 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     // Take up to 4 expiration dates for the chart
     const chartExpirations = sortedExpirations.slice(0, 4);
     
-    // Calculate days to expiry for each date
-    const today = new Date();
-    
     // Calculate historical average IV if available, otherwise use a default
     const historicalAvgIV = 25; // Default historical average IV (%)
     const highIVThreshold = historicalAvgIV * 1.2; // 20% above historical average
@@ -252,7 +249,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     
     const result = chartExpirations.map((expiryDate, index) => {
       const expiry = new Date(expiryDate);
-      const daysToExpiry = Math.round((expiry - today) / (1000 * 60 * 60 * 24));
+      const daysToExpiry = Math.round((expiry - new Date()) / (1000 * 60 * 60 * 24));
       const formattedDate = expiry.toISOString().split('T')[0];
       
       // Calculate IV for this expiration
@@ -396,8 +393,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       <div className="mt-4">
         {/* Title and explanation */}
         <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-md">
-          <h4 className="text-lg font-semibold text-blue-800 mb-2">IV Term Structure</h4>
-          <p className="text-sm text-blue-700">
+          <h4 className="text-lg font-semibold text-blue-800 mb-2 text-left">IV Term Structure</h4>
+          <p className="text-sm text-blue-700 text-left">
             The IV Term Structure shows implied volatility across different expiration dates. 
             High IV periods (above {highIVThreshold.toFixed(1)}%) are favorable for <span className="font-bold">selling premium</span>, 
             while low IV periods (below {lowIVThreshold.toFixed(1)}%) are good for <span className="font-bold">buying options</span>.
@@ -536,9 +533,9 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Additional trading insights based on IV term structure */}
-        <div className="mt-6 p-3 bg-yellow-50 border border-yellow-100 rounded-md">
-          <h4 className="text-sm font-semibold text-yellow-800 mb-1">Trading Insights</h4>
-          <ul className="text-xs text-yellow-700 list-disc pl-4 space-y-1">
+        <div className="mt-6 p-3 bg-indigo-50 border border-indigo-100 rounded-md">
+          <h4 className="text-sm font-semibold text-indigo-800 mb-1 text-left">Trading Insights</h4>
+          <ul className="text-xs text-indigo-700 list-disc pl-4 space-y-1 text-left">
             <li>
               <span className="font-medium">Declining IV:</span> Consider selling shorter-dated options to capture premium decay.
             </li>
@@ -659,22 +656,41 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
   };
 
   return (
-    <div className="container mx-auto p-4">
+    <div className="container mx-auto px-2 py-2">
+      {/* Custom styles for selected rows */}
+      <style jsx>{`
+        .selected-call-row {
+          box-shadow: inset 4px 0 0 0 #2563eb !important;
+        }
+        .selected-put-row {
+          box-shadow: inset 4px 0 0 0 #9333ea !important;
+        }
+      `}</style>
+      
       {/* Stock Info Header */}
-      <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm mb-6">
-        <div className="flex flex-wrap justify-between items-center">
-          <div>
-            <h1 className="text-2xl font-bold text-gray-800">{stock.symbol}</h1>
-            <p className="text-gray-600">
-              ${stock.currentPrice ? stock.currentPrice.toFixed(2) : '0.00'} 
-              <span className={`ml-2 ${stockPriceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
-                {stockPriceChange >= 0 ? '+' : ''}{stockPriceChange.toFixed(2)}%
-              </span>
-            </p>
+      <div className="bg-white py-3 px-3 rounded-lg border border-gray-200 shadow-sm mb-4">
+        <div className="flex flex-col sm:flex-row sm:justify-between sm:items-center">
+          <div className="mb-2 sm:mb-0">
+            <div className="flex items-baseline">
+              <h1 className="text-2xl font-bold text-gray-800">{stock.symbol}</h1>
+              <p className="ml-2 text-gray-600">
+                ${stock.currentPrice ? stock.currentPrice.toFixed(2) : '0.00'} 
+                <span className={`ml-2 ${stockPriceChange >= 0 ? 'text-green-600' : 'text-red-600'}`}>
+                  {stockPriceChange >= 0 ? '+' : ''}{stockPriceChange.toFixed(2)}%
+                </span>
+              </p>
+            </div>
+            {/* Mock Data Warning - Integrated into stock component */}
+            <div className="mt-1 bg-blue-50 border border-blue-100 rounded-md py-1 px-2 text-xs text-blue-700 flex items-center">
+              <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-blue-500" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+              </svg>
+              Using mock data for demonstration
+            </div>
           </div>
           
           {selectedOption && (
-            <div className="text-right">
+            <div className="bg-gray-50 py-2 px-3 rounded-lg border border-gray-200">
               <h2 className="text-lg font-semibold">
                 {selectedOption.type} ${selectedOption.strike} {selectedOption.expirationDate ? new Date(selectedOption.expirationDate).toLocaleDateString() : 'N/A'}
               </h2>
@@ -688,45 +704,50 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* Options Chain - Side by Side View */}
       {optionsChain && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-          <h2 className="text-lg font-semibold mb-4">Options Chain</h2>
-          
-          {/* Expiration Date Selector */}
-          <div className="mb-4">
-            <label className="block text-sm font-medium text-gray-700 mb-2">Expiration Date</label>
-            <div className="flex flex-wrap gap-2">
-              {optionsChain && optionsChain.expiration_dates && optionsChain.expiration_dates.map((date, index) => (
-                <button
-                  key={index}
-                  onClick={() => setSelectedExpiry(date)}
-                  className={`px-3 py-1 rounded-md text-sm ${
-                    selectedExpiry === date 
-                      ? 'bg-blue-600 text-white' 
-                      : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
-                  }`}
-                >
-                  {new Date(date).toLocaleDateString()}
-                </button>
-              ))}
+        <div className="bg-gray-50 py-3 px-3 rounded-lg border border-gray-200 mb-4">
+          <div className="flex flex-wrap items-center justify-between mb-3">
+            <h2 className="text-lg font-semibold">Options Chain</h2>
+            
+            {/* Expiration Date Selector - Moved to the left and made more prominent */}
+            <div className="flex-grow max-w-lg">
+              <div className="flex items-center">
+                <label className="text-sm font-bold text-gray-700 mr-2 whitespace-nowrap">Expiration:</label>
+                <div className="flex flex-wrap gap-1">
+                  {optionsChain && optionsChain.expiration_dates && optionsChain.expiration_dates.map((date, index) => (
+                    <button
+                      key={index}
+                      onClick={() => setSelectedExpiry(date)}
+                      className={`px-2 py-0.5 rounded-md text-xs ${
+                        selectedExpiry === date 
+                          ? 'bg-blue-600 text-white' 
+                          : 'bg-gray-200 text-gray-700 hover:bg-gray-300'
+                      }`}
+                    >
+                      {new Date(date).toLocaleDateString()}
+                    </button>
+                  ))}
+                </div>
+              </div>
             </div>
           </div>
           
-          {/* Side-by-side Call and Put Tables */}
+          {/* Side-by-side Call and Put Tables - Responsive for mobile */}
           {selectedExpiry && (
-            <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
               {/* Calls Table */}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-blue-700">Calls</h3>
+                <h3 className="text-md font-semibold mb-1 text-blue-700">Calls</h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200 border">
                     <thead className="bg-gray-100">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strike</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bid</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ask</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IV</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                        <th className="w-1"></th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strike</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bid</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ask</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IV</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -747,26 +768,31 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                               })}
                               className={`cursor-pointer hover:bg-blue-50 ${
                                 selectedOption && selectedOption.type === 'Call' && selectedOption.strike === option.strike && selectedOption.expirationDate === option.expiry
-                                  ? 'bg-blue-100 border-l-4 border-blue-600' 
-                                  : ''
+                                  ? 'bg-blue-100 text-blue-800' 
+                                  : 'text-gray-700'
                               }`}
                             >
-                              <td className="px-3 py-2 whitespace-nowrap text-sm font-medium">
+                              <td className={`w-1 ${
+                                selectedOption && selectedOption.type === 'Call' && selectedOption.strike === option.strike && selectedOption.expirationDate === option.expiry
+                                  ? 'bg-blue-600' 
+                                  : ''
+                              }`}></td>
+                              <td className="px-2 py-1 whitespace-nowrap text-sm font-medium">
                                 ${option.strike.toFixed(2)}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.last === 'number' ? option.last.toFixed(2) : option.last || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.bid === 'number' ? option.bid.toFixed(2) : option.bid || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.ask === 'number' ? option.ask.toFixed(2) : option.ask || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 {(option.implied_volatility || 0).toFixed(1)}%
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 {(option.volume || 0).toLocaleString()}
                               </td>
                             </tr>
@@ -775,7 +801,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                       {(!optionsChain || !optionsChain.calls || !selectedExpiry || 
                         !optionsChain.calls.filter(option => option.expiry === selectedExpiry).length) && (
                         <tr>
-                          <td colSpan="6" className="px-3 py-4 text-center text-sm text-gray-500">
+                          <td colSpan="7" className="px-2 py-2 text-center text-sm text-gray-500">
                             No call options available for this expiration date
                           </td>
                         </tr>
@@ -787,17 +813,18 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               
               {/* Puts Table */}
               <div>
-                <h3 className="text-md font-semibold mb-2 text-purple-700">Puts</h3>
+                <h3 className="text-md font-semibold mb-1 text-purple-700">Puts</h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200 border">
                     <thead className="bg-gray-100">
                       <tr>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strike</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bid</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ask</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IV</th>
-                        <th className="px-3 py-2 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
+                        <th className="w-1"></th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Strike</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Last</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Bid</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Ask</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">IV</th>
+                        <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 uppercase tracking-wider">Volume</th>
                       </tr>
                     </thead>
                     <tbody className="bg-white divide-y divide-gray-200">
@@ -818,26 +845,31 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                               })}
                               className={`cursor-pointer hover:bg-purple-50 ${
                                 selectedOption && selectedOption.type === 'Put' && selectedOption.strike === option.strike && selectedOption.expirationDate === option.expiry
-                                  ? 'bg-purple-100 border-l-4 border-purple-600' 
-                                  : ''
+                                  ? 'bg-purple-100 text-purple-800' 
+                                  : 'text-gray-700'
                               }`}
                             >
-                              <td className="px-3 py-2 whitespace-nowrap text-sm font-medium">
+                              <td className={`w-1 ${
+                                selectedOption && selectedOption.type === 'Put' && selectedOption.strike === option.strike && selectedOption.expirationDate === option.expiry
+                                  ? 'bg-purple-600' 
+                                  : ''
+                              }`}></td>
+                              <td className="px-2 py-1 whitespace-nowrap text-sm font-medium">
                                 ${option.strike.toFixed(2)}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.last === 'number' ? option.last.toFixed(2) : option.last || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.bid === 'number' ? option.bid.toFixed(2) : option.bid || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 ${typeof option.ask === 'number' ? option.ask.toFixed(2) : option.ask || '0.00'}
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 {(option.implied_volatility || 0).toFixed(1)}%
                               </td>
-                              <td className="px-3 py-2 whitespace-nowrap text-sm">
+                              <td className="px-2 py-1 whitespace-nowrap text-sm">
                                 {(option.volume || 0).toLocaleString()}
                               </td>
                             </tr>
@@ -846,7 +878,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                       {(!optionsChain || !optionsChain.puts || !selectedExpiry || 
                         !optionsChain.puts.filter(option => option.expiry === selectedExpiry).length) && (
                         <tr>
-                          <td colSpan="6" className="px-3 py-4 text-center text-sm text-gray-500">
+                          <td colSpan="7" className="px-2 py-2 text-center text-sm text-gray-500">
                             No put options available for this expiration date
                           </td>
                         </tr>
@@ -862,9 +894,11 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* IV Surface Analysis */}
       {optionsChain && (
-        <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-          <div className="flex justify-between items-center mb-4">
+        <div className="bg-gray-50 py-3 px-3 rounded-lg border border-gray-200 mb-4">
+          <div className="flex justify-between items-center mb-2">
             <h2 className="text-lg font-semibold">IV Surface Analysis</h2>
+            
+            {/* Expiration Date Selector - Moved to the left and made more prominent */}
             <button 
               onClick={() => setIsIVSectionExpanded(!isIVSectionExpanded)}
               className="text-blue-600 hover:text-blue-800 text-sm flex items-center"
@@ -875,20 +909,18 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           {/* Condensed IV metrics - always visible */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-md font-semibold">IV30</h3>
-                <span className="text-lg font-bold">{calculateIV(30).toFixed(1)}%</span>
-              </div>
-              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+          <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
+            <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-sm font-medium mb-1 text-gray-600">IV30</h3>
+              <div className="text-xl font-bold">{calculateIV(30).toFixed(1)}%</div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-1">
                 <div 
                   className="h-1 bg-blue-600 rounded-full" 
                   style={{ width: `${Math.min(calculateIV(30) * 2, 100)}%` }}
                 ></div>
               </div>
               {isIVSectionExpanded && (
-                <p className="text-sm text-blue-700 mt-2">
+                <p className="text-sm text-blue-700 mt-1">
                   {getIVStrategyInsight()}
                 </p>
               )}
@@ -902,19 +934,17 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-md font-semibold">IV60</h3>
-                <span className="text-lg font-bold">{calculateIV(60).toFixed(1)}%</span>
-              </div>
-              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+            <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-sm font-medium mb-1 text-gray-600">IV60</h3>
+              <div className="text-xl font-bold">{calculateIV(60).toFixed(1)}%</div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-1">
                 <div 
                   className="h-1 bg-purple-600 rounded-full" 
                   style={{ width: `${Math.min(calculateIV(60) * 2, 100)}%` }}
                 ></div>
               </div>
               {isIVSectionExpanded && (
-                <p className="text-sm text-purple-700 mt-2">
+                <p className="text-sm text-purple-700 mt-1">
                   {getIV60StrategyInsight()}
                 </p>
               )}
@@ -928,19 +958,17 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <div className="flex justify-between items-center mb-2">
-                <h3 className="text-md font-semibold">IV90</h3>
-                <span className="text-lg font-bold">{calculateIV(90).toFixed(1)}%</span>
-              </div>
-              <div className="h-1 w-full bg-gray-200 rounded-full mb-2">
+            <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-sm font-medium mb-1 text-gray-600">IV90</h3>
+              <div className="text-xl font-bold">{calculateIV(90).toFixed(1)}%</div>
+              <div className="h-1 w-full bg-gray-200 rounded-full mb-1">
                 <div 
                   className="h-1 bg-green-600 rounded-full" 
                   style={{ width: `${Math.min(calculateIV(90) * 2, 100)}%` }}
                 ></div>
               </div>
               {isIVSectionExpanded && (
-                <p className="text-sm text-green-700 mt-2">
+                <p className="text-sm text-green-700 mt-1">
                   {getIV90StrategyInsight()}
                 </p>
               )}
@@ -957,8 +985,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           
           {/* IV Term Structure Chart - only visible when expanded */}
           {isIVSectionExpanded && (
-            <div className="mt-6 bg-white p-4 rounded-lg border border-gray-200 shadow-sm">
-              <h3 className="text-md font-semibold mb-4">IV Term Structure</h3>
+            <div className="mt-6 bg-white py-3 px-3 rounded-lg border border-gray-200 shadow-sm">
+              <h3 className="text-md font-semibold mb-3 text-left">IV Term Structure</h3>
               {renderIVTermStructureChart()}
             </div>
           )}
@@ -967,14 +995,14 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* Main Option Visual - Only show when an option is selected */}
       {selectedOption && selectedOption.strike ? (
-        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 mb-6">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Left column - Price visualization */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-semibold mb-4">Price Analysis</h2>
+          <div className="bg-gray-50 py-3 px-3 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-semibold mb-3">Price Analysis</h2>
             
             {/* Price analysis - table-based layout to prevent overlapping */}
-            <div className="mb-6">
-              <div className="flex items-center mb-4">
+            <div className="mb-3">
+              <div className="flex items-center mb-2">
                 <div className="w-full h-2 bg-gray-300 rounded-full relative">
                   {(() => {
                     // Calculate min and max prices with buffer
@@ -1003,7 +1031,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               
               {/* Price points table */}
               <div className="grid grid-cols-3 gap-2 text-center text-sm">
-                <div className="bg-gray-100 p-2 rounded">
+                <div className="bg-gray-100 py-2 px-1 rounded">
                   <div className="flex justify-center mb-1">
                     <div className="w-3 h-3 bg-black rounded-full"></div>
                   </div>
@@ -1011,7 +1039,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                   <div className="text-lg">${stock.currentPrice.toFixed(2)}</div>
                 </div>
                 
-                <div className="bg-gray-100 p-2 rounded">
+                <div className="bg-gray-100 py-2 px-1 rounded">
                   <div className="flex justify-center mb-1">
                     <div className="w-3 h-3 bg-blue-600 rounded-full"></div>
                   </div>
@@ -1019,7 +1047,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                   <div className="text-lg">${selectedOption.strike.toFixed(2)}</div>
                 </div>
                 
-                <div className="bg-gray-100 p-2 rounded">
+                <div className="bg-gray-100 py-2 px-1 rounded">
                   <div className="flex justify-center mb-1">
                     <div className="w-3 h-3 bg-yellow-500 rounded-full"></div>
                   </div>
@@ -1030,8 +1058,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </div>
             
             {/* Status indicators */}
-            <div className="grid grid-cols-2 gap-2 mb-4">
-              <div className="bg-gray-100 p-2 rounded text-center">
+            <div className="grid grid-cols-2 gap-2 mb-3">
+              <div className="bg-gray-100 py-2 px-2 rounded text-center">
                 <div className="text-sm text-gray-600">Moneyness</div>
                 <div className={`text-lg font-medium ${getStatusColor(moneyness)}`}>
                   {moneyness > 0 ? '+' : ''}{moneyness.toFixed(2)}%
@@ -1040,7 +1068,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                   {inTheMoney ? 'In the Money' : 'Out of the Money'}
                 </div>
               </div>
-              <div className="bg-gray-100 p-2 rounded text-center">
+              <div className="bg-gray-100 py-2 px-2 rounded text-center">
                 <div className="text-sm text-gray-600">To Break Even</div>
                 <div className={`text-lg font-medium ${getStatusColor(priceToBreakEven)}`}>
                   {priceToBreakEven > 0 ? '+' : ''}{priceToBreakEven.toFixed(2)}%
@@ -1050,7 +1078,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </div>
             
             {/* Premium info */}
-            <div className="bg-gray-100 p-3 rounded flex justify-between items-center">
+            <div className="bg-gray-100 py-2 px-3 rounded flex justify-between items-center">
               <div>
                 <div className="text-sm text-gray-600">Premium</div>
                 <div className="text-xl font-bold">${premium.toFixed(2)}</div>
@@ -1063,49 +1091,49 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           {/* Right column - Greeks and other metrics */}
-          <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-            <h2 className="text-lg font-semibold mb-4">Option Greeks</h2>
+          <div className="bg-gray-50 py-3 px-3 rounded-lg border border-gray-200">
+            <h2 className="text-lg font-semibold mb-3">Option Greeks</h2>
             
-            <div className="grid grid-cols-2 gap-4 mb-6">
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-2 gap-3 mb-4">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Delta</h3>
                 <div className="text-xl font-bold">{selectedOption.delta}</div>
                 <p className="text-xs text-gray-500 mt-1">Price change per $1 move</p>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Gamma</h3>
                 <div className="text-xl font-bold">{selectedOption.gamma}</div>
                 <p className="text-xs text-gray-500 mt-1">Delta change per $1 move</p>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Theta</h3>
                 <div className="text-xl font-bold">{selectedOption.theta}</div>
                 <p className="text-xs text-gray-500 mt-1">Time decay per day</p>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Vega</h3>
                 <div className="text-xl font-bold">{selectedOption.vega}</div>
                 <p className="text-xs text-gray-500 mt-1">Price change per 1% IV</p>
               </div>
             </div>
             
-            <h2 className="text-lg font-semibold mb-4">Option Vitals</h2>
+            <h2 className="text-lg font-semibold mb-3">Option Vitals</h2>
             
-            <div className="grid grid-cols-2 gap-4">
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+            <div className="grid grid-cols-2 gap-3">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Implied Volatility</h3>
                 <div className="text-xl font-bold">{selectedOption.iv}%</div>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Expiration</h3>
                 <div className="text-xl font-bold">{daysToExpiration} days</div>
                 <p className="text-xs text-gray-500 mt-1">{selectedOption.expirationDate}</p>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Volume</h3>
                 <div className="text-xl font-bold">{selectedOption.volume.toLocaleString()}</div>
               </div>
-              <div className="bg-white p-3 rounded-lg border border-gray-200 shadow-sm">
+              <div className="bg-white py-2 px-3 rounded-lg border border-gray-200 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600">Open Interest</h3>
                 <div className="text-xl font-bold">{selectedOption.openInterest.toLocaleString()}</div>
               </div>
@@ -1115,7 +1143,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       ) : (
         /* Show a prompt when no option is selected */
         optionsChain && selectedExpiry && (
-          <div className="bg-blue-50 p-6 rounded-lg border border-blue-100 mb-6 text-center">
+          <div className="bg-blue-50 py-4 px-3 rounded-lg border border-blue-100 mb-4 text-center">
             <h3 className="text-xl font-semibold text-blue-800 mb-2">Select an Option to Analyze</h3>
             <p className="text-blue-600 mb-4">
               Choose an option from the tables below to view detailed analysis, Greeks, and price visualization.
@@ -1130,13 +1158,13 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       )}
       
       {/* Risk Assessment and Options Cost Calculator */}
-      <div className="bg-gray-50 p-4 rounded-lg border border-gray-200 mb-6">
-        <h2 className="text-lg font-semibold mb-4">Risk Analysis & Cost Calculator</h2>
+      <div className="bg-gray-50 py-3 px-3 rounded-lg border border-gray-200 mb-4">
+        <h2 className="text-lg font-semibold mb-3">Risk Analysis & Cost Calculator</h2>
         
-        <div className="grid grid-cols-1 md:grid-cols-3 gap-4 mb-4">
-          <div className="p-3 rounded-lg border bg-red-50 border-red-200">
+        <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
+          <div className="py-2 px-3 rounded-lg border bg-red-50 border-red-200">
             <p className="text-sm font-medium text-red-800">Maximum Loss</p>
-            <p className="text-xl font-bold text-red-800">
+            <p className="text-lg font-bold text-red-800">
               ${(selectedOption.premium * 100).toFixed(2)} per contract
             </p>
             <p className="text-xs text-red-600 mt-1">
@@ -1144,7 +1172,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="p-3 rounded-lg border bg-green-50 border-green-200">
+          <div className="py-2 px-3 rounded-lg border bg-green-50 border-green-200">
             <p className="text-sm font-medium text-green-800">Profit at Expiration</p>
             <p className="text-lg font-medium text-green-800">
               {selectedOption.type === 'Call' 
@@ -1157,9 +1185,9 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="p-3 rounded-lg border bg-blue-50 border-blue-200">
+          <div className="py-2 px-3 rounded-lg border bg-blue-50 border-blue-200">
             <p className="text-sm font-medium text-blue-800">Time Value</p>
-            <p className="text-xl font-bold text-blue-800">
+            <p className="text-lg font-bold text-blue-800">
               ${(() => {
                 let intrinsicValue = 0;
                 if (selectedOption.type === 'Call') {
@@ -1177,24 +1205,24 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Options Cost Calculator */}
-        <div className="border rounded-lg p-4 bg-white">
-          <h3 className="text-md font-semibold mb-3">Options Cost Calculator</h3>
+        <div className="border rounded-lg py-3 px-3 bg-white">
+          <h3 className="text-md font-semibold mb-2">Options Cost Calculator</h3>
           
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+          <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
             <div>
-              <div className="mb-3">
+              <div className="mb-2">
                 <p className="text-sm font-medium mb-1">Contract Details</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Type:</span> {selectedOption.type}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Strike:</span> ${selectedOption.strike}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Premium:</span> ${selectedOption.premium.toFixed(2)}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Expires:</span> {daysToExpiration} days
                   </div>
                 </div>
@@ -1203,10 +1231,10 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               <div>
                 <p className="text-sm font-medium mb-1">Potential Outcomes</p>
                 <div className="grid grid-cols-1 gap-2 text-sm">
-                  <div className="p-2 bg-red-50 rounded">
+                  <div className="py-1 px-2 bg-red-50 rounded">
                     <span className="text-gray-600">Max Loss:</span> ${(selectedOption.premium * 100).toFixed(2)} per contract
                   </div>
-                  <div className="p-2 bg-green-50 rounded">
+                  <div className="py-1 px-2 bg-green-50 rounded">
                     <span className="text-gray-600">Break-even:</span> ${breakEvenPrice.toFixed(2)} 
                     ({selectedOption.type === 'Call' ? '+' : '-'}{Math.abs(priceToBreakEven).toFixed(2)}% from current)
                   </div>
@@ -1215,19 +1243,19 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </div>
             
             <div>
-              <div className="mb-3">
+              <div className="mb-2">
                 <p className="text-sm font-medium mb-1">Total Investment</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Per Share:</span> ${selectedOption.premium.toFixed(2)}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">Per Contract:</span> ${(selectedOption.premium * 100).toFixed(2)}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">5 Contracts:</span> ${(selectedOption.premium * 500).toFixed(2)}
                   </div>
-                  <div className="p-2 bg-gray-50 rounded">
+                  <div className="py-1 px-2 bg-gray-50 rounded">
                     <span className="text-gray-600">10 Contracts:</span> ${(selectedOption.premium * 1000).toFixed(2)}
                   </div>
                 </div>
@@ -1255,7 +1283,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                       const percentChange = ((price / stock.currentPrice) - 1) * 100;
                       
                       scenarios.push(
-                        <div key={price} className={`p-2 ${profit > 0 ? 'bg-green-50' : 'bg-red-50'} rounded`}>
+                        <div key={price} className={`py-1 px-2 ${profit > 0 ? 'bg-green-50' : 'bg-red-50'} rounded`}>
                           <span className="text-gray-600">If price is ${price.toFixed(2)} ({percentChange > 0 ? '+' : ''}{percentChange.toFixed(1)}%):</span> 
                           <span className={profit > 0 ? 'text-green-600 font-medium' : 'text-red-600 font-medium'}>
                             {profit > 0 ? '+' : ''}{profit.toFixed(2)} per contract
