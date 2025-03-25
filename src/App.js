@@ -4,132 +4,131 @@ import OptionsVisualizer from './components/OptionsVisualizer';
 import AlpacaTrading from './components/AlpacaTrading';
 import { fetchOptionsChain, fetchStockData } from './services/alpacaService';
 import { Search, RefreshCw } from 'lucide-react';
+import { ThemeProvider } from './context/ThemeContext';
+import ThemeToggle from './components/ThemeToggle';
 
 function App() {
   // Main application state
   const [selectedOption, setSelectedOption] = useState(null);
   const [stockSymbol, setStockSymbol] = useState('AAPL');
-  const [symbolInput, setSymbolInput] = useState('AAPL');
+  const [searchInput, setSearchInput] = useState('');
   const [optionsData, setOptionsData] = useState(null);
   const [stockData, setStockData] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
 
-  // Handler for when an option is selected in the OptionsVisualizer
+  // Fetch options data when stock symbol changes
+  useEffect(() => {
+    if (stockSymbol) {
+      fetchData(stockSymbol);
+    }
+  }, [stockSymbol]);
+
+  // Handle option selection
   const handleOptionSelect = (option) => {
     setSelectedOption(option);
   };
-  
-  // Fetch options data when the stock symbol changes
-  useEffect(() => {
-    if (stockSymbol) {
-      fetchOptionsData(stockSymbol);
-    }
-  }, [stockSymbol]);
-  
-  // Function to fetch options data from the backend
-  const fetchOptionsData = async (symbol) => {
-    if (!symbol) return;
-    
+
+  // Fetch options and stock data
+  const fetchData = async (symbol) => {
     setIsLoading(true);
     setError(null);
-    
     try {
-      // First, fetch stock data to get current price
-      const stockResponse = await fetchStockData(symbol);
-      
-      // Then fetch options chain
-      const optionsResponse = await fetchOptionsChain(symbol);
-      
-      if (optionsResponse) {
-        setOptionsData(optionsResponse);
-        setStockData(stockResponse);
-        
-        // Update the symbol input to match the fetched data
-        setSymbolInput(symbol);
-      } else {
-        throw new Error('No options data returned');
-      }
+      const [optionsResponse, stockResponse] = await Promise.all([
+        fetchOptionsChain(symbol),
+        fetchStockData(symbol)
+      ]);
+      setOptionsData(optionsResponse);
+      setStockData(stockResponse);
     } catch (err) {
-      console.error('Error fetching options data:', err);
-      setError(`Failed to fetch options data: ${err.message}`);
+      console.error('Error fetching data:', err);
+      setError(`Failed to fetch data for ${symbol}. ${err.message}`);
     } finally {
       setIsLoading(false);
     }
   };
-  
+
   // Handle search form submission
   const handleSearch = (e) => {
     e.preventDefault();
-    if (symbolInput.trim()) {
-      setStockSymbol(symbolInput.trim().toUpperCase());
+    if (searchInput.trim()) {
+      setStockSymbol(searchInput.trim().toUpperCase());
+      setSearchInput('');
     }
   };
 
+  // Handle input change
+  const handleInputChange = (e) => {
+    setSearchInput(e.target.value);
+  };
+
+  // Refresh data
+  const handleRefresh = () => {
+    fetchData(stockSymbol);
+  };
+
   return (
-    <div className="App">
-      <div className="min-h-screen bg-gray-100 py-8">
-        <div className="w-full max-w-[1400px] mx-auto px-4">
-          <h1 className="text-3xl font-bold text-center mb-6">Options Trading Visualizer</h1>
-          
-          {/* Global Search Bar */}
-          <div className="bg-white p-4 rounded-lg shadow-md mb-6 w-full">
-            <form onSubmit={handleSearch} className="flex items-center space-x-2">
-              <div className="relative flex-1">
-                <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                  <Search className="h-5 w-5 text-gray-400" />
+    <ThemeProvider>
+      <div className="min-h-screen bg-gray-50 dark:bg-dark-bg text-gray-900 dark:text-white transition-colors duration-200">
+        <header className="bg-white dark:bg-dark-surface shadow-sm transition-colors duration-200">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4 flex justify-between items-center">
+            <h1 className="text-2xl font-bold text-gray-900 dark:text-white transition-colors duration-200">Options Visualizer</h1>
+            <div className="flex items-center space-x-4">
+              <ThemeToggle />
+              <form onSubmit={handleSearch} className="flex items-center">
+                <div className="relative rounded-md shadow-sm">
+                  <input
+                    type="text"
+                    value={searchInput}
+                    onChange={handleInputChange}
+                    placeholder="Enter stock symbol"
+                    className="focus:ring-blue-500 focus:border-blue-500 dark:focus:ring-dark-accent dark:focus:border-dark-accent block w-full pl-3 pr-10 py-2 sm:text-sm border-gray-300 dark:border-gray-700 rounded-md dark:bg-dark-surface dark:text-white transition-colors duration-200"
+                  />
+                  <div className="absolute inset-y-0 right-0 flex items-center pr-3">
+                    <Search className="h-4 w-4 text-gray-400 dark:text-gray-300" />
+                  </div>
                 </div>
-                <input
-                  type="text"
-                  placeholder="Enter stock symbol (e.g., AAPL, MSFT, TSLA)"
-                  className="pl-10 w-full border border-gray-300 rounded-md py-2 px-3 focus:outline-none focus:ring-2 focus:ring-blue-500"
-                  value={symbolInput}
-                  onChange={(e) => setSymbolInput(e.target.value)}
-                />
-              </div>
+                <button
+                  type="submit"
+                  className="ml-3 inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md shadow-sm text-white bg-blue-600 hover:bg-blue-700 dark:bg-dark-accent dark:hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-dark-accent transition-colors duration-200"
+                >
+                  Search
+                </button>
+              </form>
               <button
-                type="submit"
-                className="bg-blue-600 text-white px-4 py-2 rounded-md hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 flex items-center"
-                disabled={isLoading}
+                onClick={handleRefresh}
+                className="inline-flex items-center px-3 py-2 border border-gray-300 dark:border-gray-700 shadow-sm text-sm leading-4 font-medium rounded-md text-gray-700 dark:text-white bg-white dark:bg-dark-surface hover:bg-gray-50 dark:hover:bg-opacity-90 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500 dark:focus:ring-dark-accent transition-colors duration-200"
               >
-                {isLoading ? (
-                  <>
-                    <RefreshCw className="h-4 w-4 mr-2 animate-spin" />
-                    Loading...
-                  </>
-                ) : (
-                  'Search'
-                )}
+                <RefreshCw className="h-4 w-4 mr-1" />
+                Refresh
               </button>
-            </form>
-            
-            {error && (
-              <div className="mt-3 text-sm text-red-600">
-                {error}
-              </div>
-            )}
+            </div>
           </div>
-          
-          {/* Options Visualizer Component */}
-          <OptionsVisualizer 
-            onOptionSelect={handleOptionSelect} 
+        </header>
+
+        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {error && (
+            <div className="mb-4 bg-red-100 dark:bg-red-900 border border-red-400 dark:border-red-700 text-red-700 dark:text-red-100 px-4 py-3 rounded relative" role="alert">
+              <strong className="font-bold">Error: </strong>
+              <span className="block sm:inline">{error}</span>
+            </div>
+          )}
+
+          <OptionsVisualizer
+            onOptionSelect={handleOptionSelect}
             stockSymbol={stockSymbol}
             optionsData={optionsData}
             stockData={stockData}
             isLoading={isLoading}
           />
-          
+
           {/* Alpaca Trading Component */}
-          <AlpacaTrading 
-            selectedOption={selectedOption} 
-            stockSymbol={stockSymbol}
-            onOptionsLoaded={setOptionsData}
-            onStockSymbolChange={setStockSymbol}
-            isSearchDisabled={true} /* Disable search in AlpacaTrading */
-          />
-        </div>
+          <div className="mt-8">
+            <AlpacaTrading selectedOption={selectedOption} />
+          </div>
+        </main>
       </div>
-    </div>
+    </ThemeProvider>
   );
 }
 
