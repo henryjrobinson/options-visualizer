@@ -916,7 +916,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           
           {/* Condensed IV metrics - always visible */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
-            <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV30</h3>
               <div className="text-xl font-bold">{calculateIV(30).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -940,7 +940,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV60</h3>
               <div className="text-xl font-bold">{calculateIV(60).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -964,7 +964,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV90</h3>
               <div className="text-xl font-bold">{calculateIV(90).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -991,7 +991,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           
           {/* IV Term Structure Chart - only visible when expanded */}
           {isIVSectionExpanded && (
-            <div className="mt-6 bg-white dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="mt-6 bg-white dark:bg-gray-800 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
               <h3 className="text-md font-semibold mb-3 text-left text-gray-900 dark:text-white">IV Term Structure</h3>
               {renderIVTermStructureChart()}
             </div>
@@ -1101,22 +1101,22 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Option Greeks</h2>
             
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Delta</h3>
                 <div className="text-xl font-bold">{selectedOption.delta}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Price change per $1 move</p>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Gamma</h3>
                 <div className="text-xl font-bold">{selectedOption.gamma}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Delta change per $1 move</p>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Theta</h3>
                 <div className="text-xl font-bold">{selectedOption.theta}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Time decay per day</p>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Vega</h3>
                 <div className="text-xl font-bold">{selectedOption.vega}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Price change per 1% IV</p>
@@ -1126,20 +1126,20 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Option Vitals</h2>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Implied Volatility</h3>
                 <div className="text-xl font-bold">{selectedOption.iv}%</div>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Expiration</h3>
                 <div className="text-xl font-bold">{daysToExpiration} days</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{selectedOption.expirationDate}</p>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Volume</h3>
                 <div className="text-xl font-bold">{selectedOption.volume.toLocaleString()}</div>
               </div>
-              <div className="bg-white dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Open Interest</h3>
                 <div className="text-xl font-bold">{selectedOption.openInterest.toLocaleString()}</div>
               </div>
@@ -1168,7 +1168,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Risk Analysis & Cost Calculator</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-          <div className="py-2 px-3 rounded-lg border bg-red-50 dark:bg-red-800 border-red-200 dark:border-red-700">
+          <div className="py-2 px-3 rounded-lg border bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700">
             <p className="text-sm font-medium text-red-800 dark:text-red-300">Maximum Loss</p>
             <p className="text-lg font-bold text-red-800 dark:text-red-300">
               ${(selectedOption.premium * 100).toFixed(2)} per contract
@@ -1178,7 +1178,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="py-2 px-3 rounded-lg border bg-green-50 dark:bg-green-800 border-green-200 dark:border-green-700">
+          <div className="py-2 px-3 rounded-lg border bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
             <p className="text-sm font-medium text-green-800 dark:text-green-300">Profit at Expiration</p>
             <p className="text-lg font-medium text-green-800 dark:text-green-300">
               {selectedOption.type === 'Call' 
@@ -1191,7 +1191,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="py-2 px-3 rounded-lg border bg-blue-50 dark:bg-blue-800 border-blue-200 dark:border-blue-700">
+          <div className="py-2 px-3 rounded-lg border bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700">
             <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Time Value</p>
             <p className="text-lg font-bold text-blue-800 dark:text-blue-300">
               ${(() => {
@@ -1211,7 +1211,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Options Cost Calculator */}
-        <div className="border rounded-lg py-3 px-3 bg-white dark:bg-dark-surface">
+        <div className="border rounded-lg py-3 px-3 bg-white dark:bg-gray-800 dark:border-gray-700">
           <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">Options Cost Calculator</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
@@ -1237,10 +1237,10 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               <div>
                 <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Potential Outcomes</p>
                 <div className="grid grid-cols-1 gap-2 text-sm">
-                  <div className="py-1 px-2 bg-red-50 dark:bg-red-800 rounded">
+                  <div className="py-1 px-2 bg-red-50 dark:bg-red-900/30 rounded">
                     <span className="text-gray-600 dark:text-gray-300">Max Loss:</span> ${(selectedOption.premium * 100).toFixed(2)} per contract
                   </div>
-                  <div className="py-1 px-2 bg-green-50 dark:bg-green-800 rounded">
+                  <div className="py-1 px-2 bg-green-50 dark:bg-green-900/30 rounded">
                     <span className="text-gray-600 dark:text-gray-300">Break-even:</span> ${breakEvenPrice.toFixed(2)} 
                     ({selectedOption.type === 'Call' ? '+' : '-'}{Math.abs(priceToBreakEven).toFixed(2)}% from current)
                   </div>
@@ -1289,7 +1289,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                       const percentChange = ((price / stock.currentPrice) - 1) * 100;
                       
                       scenarios.push(
-                        <div key={price} className={`py-1 px-2 ${profit > 0 ? 'bg-green-50 dark:bg-green-800' : 'bg-red-50 dark:bg-red-800'} rounded`}>
+                        <div key={price} className={`py-1 px-2 ${profit > 0 ? 'bg-green-50 dark:bg-green-900/30' : 'bg-red-50 dark:bg-red-900/30'} rounded text-gray-800 dark:text-gray-200`}>
                           <span className="text-gray-600 dark:text-gray-300">If price is ${price.toFixed(2)} ({percentChange > 0 ? '+' : ''}{percentChange.toFixed(1)}%):</span> 
                           <span className={profit > 0 ? 'text-green-600 dark:text-green-300 font-medium' : 'text-red-600 dark:text-red-300 font-medium'}>
                             {profit > 0 ? '+' : ''}{profit.toFixed(2)} per contract
