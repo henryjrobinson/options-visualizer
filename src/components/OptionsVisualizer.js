@@ -519,7 +519,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                 
                 {/* Date and strategy info */}
                 <div className="text-center p-2 bg-white rounded-md border border-gray-200 shadow-sm w-full">
-                  <div className="text-sm font-medium text-gray-800">{item.displayDate}</div>
+                  <div className="text-sm font-medium text-gray-800">Date: {item.displayDate}</div>
                   <div className={`mt-2 text-xs font-semibold px-2 py-1 rounded-md ${item.strategyColor}`}>
                     {item.strategy}
                   </div>
@@ -687,7 +687,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               </p>
             </div>
             {/* Mock Data Warning - Integrated into stock component */}
-            <div className="mt-1 bg-blue-50 dark:bg-dark-surface border border-blue-100 dark:border-gray-700 rounded-md py-1 px-2 text-xs text-blue-700 dark:text-blue-300 flex items-center">
+            <div className="mt-1 bg-blue-50 dark:bg-dark-surface border border-blue-100 rounded-md py-1 px-2 text-xs text-blue-700 dark:text-blue-300 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-blue-500 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -1169,8 +1169,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
           <div className="py-2 px-3 rounded-lg border bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700">
-            <p className="text-sm font-medium text-red-800 dark:text-red-300">Maximum Loss</p>
-            <p className="text-lg font-bold text-red-800 dark:text-red-300">
+            <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Maximum Loss</p>
+            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
               ${(selectedOption.premium * 100).toFixed(2)} per contract
             </p>
             <p className="text-xs text-red-600 dark:text-red-300 mt-1">
@@ -1179,8 +1179,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           <div className="py-2 px-3 rounded-lg border bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
-            <p className="text-sm font-medium text-green-800 dark:text-green-300">Profit at Expiration</p>
-            <p className="text-lg font-medium text-green-800 dark:text-green-300">
+            <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Profit at Expiration</p>
+            <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
               {selectedOption.type === 'Call' 
                 ? `(Price - $${selectedOption.strike}) × 100 - $${(selectedOption.premium * 100).toFixed(2)}` 
                 : `($${selectedOption.strike} - Price) × 100 - $${(selectedOption.premium * 100).toFixed(2)}`}
@@ -1192,8 +1192,8 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           <div className="py-2 px-3 rounded-lg border bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700">
-            <p className="text-sm font-medium text-blue-800 dark:text-blue-300">Time Value</p>
-            <p className="text-lg font-bold text-blue-800 dark:text-blue-300">
+            <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Time Value</p>
+            <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
               ${(() => {
                 let intrinsicValue = 0;
                 if (selectedOption.type === 'Call') {
@@ -1219,17 +1219,17 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               <div className="mb-2">
                 <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Contract Details</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Type:</span> {selectedOption.type}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Type:</span> <span className="dark:text-gray-200">{selectedOption.type}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Strike:</span> ${selectedOption.strike}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Strike:</span> <span className="dark:text-gray-200">${selectedOption.strike}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Premium:</span> ${selectedOption.premium.toFixed(2)}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Premium:</span> <span className="dark:text-gray-200">${selectedOption.premium.toFixed(2)}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Expires:</span> {daysToExpiration} days
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Expires:</span> <span className="dark:text-gray-200">{daysToExpiration} days</span>
                   </div>
                 </div>
               </div>
@@ -1237,12 +1237,12 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               <div>
                 <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Potential Outcomes</p>
                 <div className="grid grid-cols-1 gap-2 text-sm">
-                  <div className="py-1 px-2 bg-red-50 dark:bg-red-900/30 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Max Loss:</span> ${(selectedOption.premium * 100).toFixed(2)} per contract
+                  <div className="py-1 px-2 bg-red-50 dark:bg-red-900/30 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Max Loss:</span> <span className="dark:text-gray-200">${(selectedOption.premium * 100).toFixed(2)} per contract</span>
                   </div>
-                  <div className="py-1 px-2 bg-green-50 dark:bg-green-900/30 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Break-even:</span> ${breakEvenPrice.toFixed(2)} 
-                    ({selectedOption.type === 'Call' ? '+' : '-'}{Math.abs(priceToBreakEven).toFixed(2)}% from current)
+                  <div className="py-1 px-2 bg-green-50 dark:bg-green-900/30 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Break-even:</span> <span className="dark:text-gray-200">${breakEvenPrice.toFixed(2)} 
+                    ({selectedOption.type === 'Call' ? '+' : '-'}{Math.abs(priceToBreakEven).toFixed(2)}% from current)</span>
                   </div>
                 </div>
               </div>
@@ -1252,17 +1252,17 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               <div className="mb-2">
                 <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Total Investment</p>
                 <div className="grid grid-cols-2 gap-2 text-sm">
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Per Share:</span> ${selectedOption.premium.toFixed(2)}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Per Share:</span> <span className="dark:text-gray-200">${selectedOption.premium.toFixed(2)}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">Per Contract:</span> ${(selectedOption.premium * 100).toFixed(2)}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">Per Contract:</span> <span className="dark:text-gray-200">${(selectedOption.premium * 100).toFixed(2)}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">5 Contracts:</span> ${(selectedOption.premium * 500).toFixed(2)}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">5 Contracts:</span> <span className="dark:text-gray-200">${(selectedOption.premium * 500).toFixed(2)}</span>
                   </div>
-                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded">
-                    <span className="text-gray-600 dark:text-gray-300">10 Contracts:</span> ${(selectedOption.premium * 1000).toFixed(2)}
+                  <div className="py-1 px-2 bg-gray-50 dark:bg-gray-700 rounded text-gray-700 dark:text-gray-200">
+                    <span className="text-gray-600 dark:text-gray-300">10 Contracts:</span> <span className="dark:text-gray-200">${(selectedOption.premium * 1000).toFixed(2)}</span>
                   </div>
                 </div>
               </div>
