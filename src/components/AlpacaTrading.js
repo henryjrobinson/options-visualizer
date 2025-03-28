@@ -202,40 +202,40 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
 
   if (isLoading) {
     return (
-      <div className="w-full p-4 bg-white rounded-lg shadow-lg mt-6">
+      <div className="w-full p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg mt-6 dark:border dark:border-gray-700">
         <div className="flex justify-center items-center h-24">
-          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500"></div>
-          <span className="ml-2">Loading...</span>
+          <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-blue-500 dark:border-blue-400"></div>
+          <span className="ml-2 text-gray-900 dark:text-white">Loading...</span>
         </div>
       </div>
     );
   }
 
   return (
-    <div className="w-full p-4 bg-white rounded-lg shadow-lg mt-6">
-      <h2 className="text-xl font-bold mb-4 flex items-center">
+    <div className="w-full p-4 bg-white dark:bg-gray-800 rounded-lg shadow-lg mt-6 dark:border dark:border-gray-700">
+      <h2 className="text-xl font-bold mb-4 flex items-center text-gray-900 dark:text-white">
         <DollarSign className="mr-2" size={20} />
         Alpaca Trading Integration
       </h2>
       
       {/* Options Search - Only shown if search is not disabled */}
       {!searchDisabled ? (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-500 rounded-lg p-4 mb-4">
           <div className="flex items-center mb-3">
-            <Search className="h-5 w-5 mr-2 text-blue-600" />
-            <h3 className="font-semibold text-blue-800">Search Options</h3>
+            <Search className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-300" />
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300">Search Options</h3>
           </div>
           <div className="flex space-x-2">
             <input
               type="text"
               placeholder="Enter stock symbol (e.g., AAPL)"
-              className="flex-1 border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+              className="flex-1 border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
               value={searchSymbol}
               onChange={(e) => setSearchSymbol(e.target.value)}
               onKeyPress={(e) => e.key === 'Enter' && searchSymbol.trim() && fetchOptionsData(searchSymbol.trim().toUpperCase())}
             />
             <button
-              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
+              className="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700 dark:bg-blue-700 dark:hover:bg-blue-600 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2"
               onClick={() => {
                 if (searchSymbol.trim()) {
                   fetchOptionsData(searchSymbol.trim().toUpperCase());
@@ -255,36 +255,36 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
           </div>
         </div>
       ) : (
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
+        <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-500 rounded-lg p-4 mb-4">
           <div className="flex items-center mb-3">
-            <Search className="h-5 w-5 mr-2 text-blue-600" />
-            <h3 className="font-semibold text-blue-800">Trading {stockSymbol} Options</h3>
+            <Search className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-300" />
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300">Trading {stockSymbol} Options</h3>
           </div>
-          <p className="text-sm text-gray-600">Use the search bar at the top of the page to change the stock symbol.</p>
+          <p className="text-sm text-gray-600 dark:text-gray-300">Use the search bar at the top of the page to change the stock symbol.</p>
         </div>
       )}
         
       {/* Cost Calculator */}
         {selectedOption && (
-          <div className="mt-4 p-3 bg-blue-100 rounded-lg">
+          <div className="mt-4 p-3 bg-blue-100 dark:bg-blue-900/30 rounded-lg border dark:border-blue-700">
             <div className="flex items-center mb-2">
-              <Calculator className="h-5 w-5 mr-2 text-blue-600" />
-              <h3 className="font-semibold text-blue-800">Options Cost Calculator</h3>
+              <Calculator className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-300" />
+              <h3 className="font-semibold text-blue-800 dark:text-blue-300">Options Cost Calculator</h3>
             </div>
             <div className="grid grid-cols-2 gap-3">
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Contracts</label>
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Contracts</label>
                 <input
                   type="number"
                   min="1"
-                  className="w-full border border-gray-300 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                  className="w-full border border-gray-300 dark:border-gray-600 rounded px-3 py-2 focus:outline-none focus:ring-2 focus:ring-blue-500 dark:focus:ring-blue-400 dark:bg-gray-700 dark:text-white"
                   value={quantity}
                   onChange={(e) => setQuantity(Math.max(1, parseInt(e.target.value) || 1))}
                 />
               </div>
               <div>
-                <label className="block text-sm font-medium text-gray-700 mb-1">Total Cost</label>
-                <div className="w-full border border-gray-300 bg-gray-50 rounded px-3 py-2 font-mono">
+                <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Total Cost</label>
+                <div className="w-full border border-gray-300 dark:border-gray-600 bg-gray-50 dark:bg-gray-700 rounded px-3 py-2 font-mono dark:text-white">
                   ${totalCost.toFixed(2)}
                 </div>
               </div>
@@ -293,17 +293,17 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
         )}
       
       {error && (
-        <div className="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded mb-4 flex items-start">
+        <div className="bg-red-100 dark:bg-red-900/30 border border-red-400 dark:border-red-600 text-red-700 dark:text-red-300 px-4 py-3 rounded mb-4 flex items-start">
           <AlertCircle className="mr-2 mt-0.5" size={16} />
           <span>{error}</span>
         </div>
       )}
       
       {orderStatus && (
-        <div className="bg-green-100 border border-green-400 text-green-700 px-4 py-3 rounded mb-4">
+        <div className="bg-green-100 dark:bg-green-900/30 border border-green-400 dark:border-green-600 text-green-700 dark:text-green-300 px-4 py-3 rounded mb-4">
           <div className="flex items-center mb-2">
             <Check className="mr-2" size={16} />
-            <span className="font-bold">Order Submitted</span>
+            <span className="font-bold text-gray-900 dark:text-white">Order Submitted</span>
           </div>
           <div className="grid grid-cols-2 gap-2 text-sm">
             <div>Order ID:</div>
@@ -313,7 +313,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
             <div>Symbol:</div>
             <div>{orderStatus.symbol}</div>
             <div>Side:</div>
-            <div className={orderStatus.side === 'buy' ? 'text-green-600' : 'text-red-600'}>
+            <div className={orderStatus.side === 'buy' ? 'text-green-600 dark:text-green-300' : 'text-red-600 dark:text-red-300'}>
               {orderStatus.side.toUpperCase()}
             </div>
             <div>Quantity:</div>
@@ -321,7 +321,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
           </div>
           <button 
             onClick={resetOrderStatus}
-            className="mt-3 bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded"
+            className="mt-3 bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold py-2 px-4 rounded"
           >
             Close
           </button>
@@ -330,19 +330,19 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
       
       {accountInfo && !orderStatus && (
         <div className="mb-6">
-          <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
-            <h3 className="font-semibold text-blue-800 mb-2">Account Information</h3>
+          <div className="bg-blue-50 dark:bg-blue-900/30 border border-blue-200 dark:border-blue-500 rounded-lg p-4 mb-4">
+            <h3 className="font-semibold text-blue-800 dark:text-blue-300 mb-2">Account Information</h3>
             <div className="grid grid-cols-2 gap-x-4 gap-y-2">
-              <div className="text-sm text-gray-600">Cash Balance:</div>
-              <div className="font-medium">${accountInfo.cash.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Portfolio Value:</div>
-              <div className="font-medium">${accountInfo.portfolio_value.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Buying Power:</div>
-              <div className="font-medium">${accountInfo.buying_power.toLocaleString()}</div>
-              <div className="text-sm text-gray-600">Account Status:</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Cash Balance:</div>
+              <div className="font-medium text-gray-900 dark:text-white">${accountInfo.cash.toLocaleString()}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Portfolio Value:</div>
+              <div className="font-medium text-gray-900 dark:text-white">${accountInfo.portfolio_value.toLocaleString()}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Buying Power:</div>
+              <div className="font-medium text-gray-900 dark:text-white">${accountInfo.buying_power.toLocaleString()}</div>
+              <div className="text-sm text-gray-600 dark:text-gray-300">Account Status:</div>
               <div className="font-medium">
                 <span className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                  accountInfo.status === 'ACTIVE' ? 'bg-green-100 text-green-800' : 'bg-yellow-100 text-yellow-800'
+                  accountInfo.status === 'ACTIVE' ? 'bg-green-100 dark:bg-green-900/30 text-green-800 dark:text-green-300' : 'bg-yellow-100 dark:bg-yellow-900/30 text-yellow-800 dark:text-yellow-300'
                 }`}>
                   {accountInfo.status}
                 </span>
@@ -353,45 +353,45 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
           {selectedOption ? (
             <>
               {showOrderForm ? (
-                <div className="border rounded-lg p-4">
-                  <h3 className="font-semibold mb-3">Place Order for {stockSymbol} {selectedOption.type} ${selectedOption.strike}</h3>
+                <div className="border rounded-lg p-4 dark:border-gray-700">
+                  <h3 className="font-semibold mb-3 text-gray-900 dark:text-white">Place Order for {stockSymbol} {selectedOption.type} ${selectedOption.strike}</h3>
                   
                   {/* Cost Calculator */}
-                  <div className="bg-gray-100 p-3 rounded-md mb-4">
+                  <div className="bg-gray-100 dark:bg-gray-700 p-3 rounded-md mb-4">
                     <div className="flex items-center mb-2">
-                      <Calculator className="h-5 w-5 mr-2 text-blue-600" />
-                      <h3 className="font-semibold">Order Cost Calculator</h3>
+                      <Calculator className="h-5 w-5 mr-2 text-blue-600 dark:text-blue-300" />
+                      <h3 className="font-semibold text-gray-900 dark:text-white">Order Cost Calculator</h3>
                     </div>
                     <div className="grid grid-cols-2 gap-2 text-sm">
                       <div>Contract Price:</div>
-                      <div>${selectedOption ? (selectedOption.lastPrice || selectedOption.last || 0).toFixed(2) : '0.00'}</div>
+                      <div className="text-gray-900 dark:text-white">${selectedOption ? (selectedOption.lastPrice || selectedOption.last || 0).toFixed(2) : '0.00'}</div>
                       <div>Quantity:</div>
-                      <div>{quantity} contract{quantity !== 1 ? 's' : ''}</div>
+                      <div className="text-gray-900 dark:text-white">{quantity} contract{quantity !== 1 ? 's' : ''}</div>
                       <div>Multiplier:</div>
-                      <div>x 100 shares</div>
-                      <div className="font-bold">Total Cost:</div>
-                      <div className="font-bold">${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
+                      <div className="text-gray-900 dark:text-white">x 100 shares</div>
+                      <div className="font-bold text-gray-900 dark:text-white">Total Cost:</div>
+                      <div className="font-bold text-gray-900 dark:text-white">${totalCost.toLocaleString(undefined, { minimumFractionDigits: 2, maximumFractionDigits: 2 })}</div>
                     </div>
                   </div>
                   
                   <div className="grid grid-cols-1 gap-4 mb-4">
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Quantity (Contracts)</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Quantity (Contracts)</label>
                       <input
                         type="number"
                         min="1"
                         value={quantity}
                         onChange={(e) => setQuantity(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                       />
                     </div>
                     
                     <div>
-                      <label className="block text-sm font-medium text-gray-700 mb-1">Order Type</label>
+                      <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Order Type</label>
                       <select
                         value={orderType}
                         onChange={(e) => setOrderType(e.target.value)}
-                        className="w-full p-2 border rounded"
+                        className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                       >
                         <option value="market">Market</option>
                         <option value="limit">Limit</option>
@@ -400,13 +400,13 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
                     
                     {orderType === 'limit' && (
                       <div>
-                        <label className="block text-sm font-medium text-gray-700 mb-1">Limit Price ($)</label>
+                        <label className="block text-sm font-medium text-gray-700 dark:text-gray-300 mb-1">Limit Price ($)</label>
                         <input
                           type="number"
                           step="0.01"
                           value={limitPrice}
                           onChange={(e) => setLimitPrice(e.target.value)}
-                          className="w-full p-2 border rounded"
+                          className="w-full p-2 border rounded dark:border-gray-600 dark:bg-gray-700 dark:text-white"
                         />
                       </div>
                     )}
@@ -415,13 +415,13 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
                   <div className="flex space-x-2">
                     <button
                       onClick={() => placeOrder('buy')}
-                      className="flex-1 bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-4 rounded"
+                      className="flex-1 bg-green-600 dark:bg-green-700 hover:bg-green-700 dark:hover:bg-green-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Buy to Open
                     </button>
                     <button
                       onClick={() => placeOrder('sell')}
-                      className="flex-1 bg-red-600 hover:bg-red-700 text-white font-bold py-2 px-4 rounded"
+                      className="flex-1 bg-red-600 dark:bg-red-700 hover:bg-red-700 dark:hover:bg-red-600 text-white font-bold py-2 px-4 rounded"
                     >
                       Sell to Open
                     </button>
@@ -429,7 +429,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
                   
                   <button
                     onClick={() => setShowOrderForm(false)}
-                    className="mt-3 w-full bg-gray-200 hover:bg-gray-300 text-gray-800 font-semibold py-2 px-4 rounded"
+                    className="mt-3 w-full bg-gray-200 dark:bg-gray-700 hover:bg-gray-300 dark:hover:bg-gray-600 text-gray-800 dark:text-white font-semibold py-2 px-4 rounded"
                   >
                     Cancel
                   </button>
@@ -437,7 +437,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
               ) : (
                 <button
                   onClick={() => setShowOrderForm(true)}
-                  className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-4 rounded flex items-center justify-center"
+                  className="w-full bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-3 px-4 rounded flex items-center justify-center"
                 >
                   <TrendingUp className="mr-2" size={18} />
                   Trade This Option
@@ -445,20 +445,20 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
               )}
             </>
           ) : (
-            <div className="text-center p-4 border rounded-lg bg-gray-50">
-              <p className="text-gray-500">Select an option to trade</p>
+            <div className="text-center p-4 border rounded-lg bg-gray-50 dark:bg-gray-700">
+              <p className="text-gray-500 dark:text-gray-300">Select an option to trade</p>
             </div>
           )}
         </div>
       )}
       
       {!accountInfo && !isLoading && !orderStatus && (
-        <div className="text-center p-6 border rounded-lg bg-gray-50">
+        <div className="text-center p-6 border rounded-lg bg-gray-50 dark:bg-gray-700">
           <AlertCircle className="mx-auto mb-2" size={24} />
-          <p className="text-gray-700 mb-4">Unable to connect to Alpaca API</p>
+          <p className="text-gray-700 dark:text-gray-300 mb-4">Unable to connect to Alpaca API</p>
           <button
             onClick={getAccountInfo}
-            className="bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded"
+            className="bg-blue-600 dark:bg-blue-700 hover:bg-blue-700 dark:hover:bg-blue-600 text-white font-bold py-2 px-4 rounded"
           >
             Retry Connection
           </button>

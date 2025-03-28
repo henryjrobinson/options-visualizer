@@ -378,7 +378,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     
     if (!data || data.length === 0) {
       return (
-        <div className="p-4 text-center text-gray-500">
+        <div className="p-4 text-center text-gray-500 dark:text-gray-300">
           <p>No IV term structure data available. Try selecting a different stock with more active options.</p>
         </div>
       );
@@ -392,9 +392,9 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
     return (
       <div className="mt-4">
         {/* Title and explanation */}
-        <div className="mb-4 p-3 bg-blue-50 border border-blue-100 rounded-md">
-          <h4 className="text-lg font-semibold text-blue-800 mb-2 text-left">IV Term Structure</h4>
-          <p className="text-sm text-blue-700 text-left">
+        <div className="mb-4 p-3 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-500 rounded-md">
+          <h4 className="text-lg font-semibold text-blue-800 dark:text-blue-300 mb-2 text-left">IV Term Structure</h4>
+          <p className="text-sm text-blue-700 dark:text-blue-300 text-left">
             The IV Term Structure shows implied volatility across different expiration dates. 
             High IV periods (above {highIVThreshold.toFixed(1)}%) are favorable for <span className="font-bold">selling premium</span>, 
             while low IV periods (below {lowIVThreshold.toFixed(1)}%) are good for <span className="font-bold">buying options</span>.
@@ -402,59 +402,59 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Legend */}
-        <div className="flex flex-wrap items-center mb-4 text-xs gap-4 bg-gray-50 p-2 rounded-md">
+        <div className="flex flex-wrap items-center mb-4 text-xs gap-4 bg-gray-50 dark:bg-gray-700 p-2 rounded-md">
           <div className="flex items-center">
             <div className="w-3 h-3 bg-green-500 mr-1 rounded-sm"></div>
-            <span>High IV - Good for SELLING premium</span>
+            <span className="text-gray-600 dark:text-gray-300">High IV - Good for SELLING premium</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-blue-500 mr-1 rounded-sm"></div>
-            <span>Low IV - Good for BUYING options</span>
+            <span className="text-gray-600 dark:text-gray-300">Low IV - Good for BUYING options</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-purple-500 mr-1 rounded-sm"></div>
-            <span>IV60 (60-day)</span>
+            <span className="text-gray-600 dark:text-gray-300">IV60 (60-day)</span>
           </div>
           <div className="flex items-center">
             <div className="w-3 h-3 bg-pink-500 mr-1 rounded-sm"></div>
-            <span>IV90 (90-day)</span>
+            <span className="text-gray-600 dark:text-gray-300">IV90 (90-day)</span>
           </div>
         </div>
         
         {/* Threshold lines */}
         <div className="relative mb-2">
-          <div className="border-t-2 border-dashed border-red-300 w-full pt-1">
-            <span className="absolute right-0 text-xs font-medium text-red-500">High IV ({highIVThreshold.toFixed(1)}%)</span>
+          <div className="border-t-2 border-dashed border-red-300 dark:border-red-500 w-full pt-1">
+            <span className="absolute right-0 text-xs font-medium text-red-500 dark:text-red-300">High IV ({highIVThreshold.toFixed(1)}%)</span>
           </div>
         </div>
         
         <div className="relative mb-2 mt-6">
-          <div className="border-t-2 border-gray-400 w-full pt-1">
-            <span className="absolute right-0 text-xs font-medium text-gray-600">Historical Avg IV ({historicalAvgIV}%)</span>
+          <div className="border-t-2 border-gray-400 dark:border-gray-500 w-full pt-1">
+            <span className="absolute right-0 text-xs font-medium text-gray-600 dark:text-gray-300">Historical Avg IV ({historicalAvgIV}%)</span>
           </div>
         </div>
         
         <div className="relative mb-4 mt-6">
-          <div className="border-t-2 border-dashed border-blue-300 w-full pt-1">
-            <span className="absolute right-0 text-xs font-medium text-blue-500">Low IV ({lowIVThreshold.toFixed(1)}%)</span>
+          <div className="border-t-2 border-dashed border-blue-300 dark:border-blue-500 w-full pt-1">
+            <span className="absolute right-0 text-xs font-medium text-blue-500 dark:text-blue-300">Low IV ({lowIVThreshold.toFixed(1)}%)</span>
           </div>
         </div>
         
         {/* Strategy labels */}
         <div className="grid grid-cols-4 gap-6 mb-2">
           {data.map((item, index) => {
-            let labelColor = "bg-gray-100 text-gray-800";
+            let labelColor = "bg-gray-100 text-gray-800 dark:text-gray-200";
             let labelText = "NEUTRAL";
-            let labelBorder = "border-gray-200";
+            let labelBorder = "border-gray-200 dark:border-gray-500";
             
             if (item.isHighIV) {
-              labelColor = "bg-green-100 text-green-800";
+              labelColor = "bg-green-100 text-green-800 dark:text-green-300";
               labelText = "SELL";
-              labelBorder = "border-green-200";
+              labelBorder = "border-green-200 dark:border-green-500";
             } else if (item.isLowIV) {
-              labelColor = "bg-blue-100 text-blue-800";
+              labelColor = "bg-blue-100 text-blue-800 dark:text-blue-300";
               labelText = "BUY";
-              labelBorder = "border-blue-200";
+              labelBorder = "border-blue-200 dark:border-blue-500";
             }
             
             return (
@@ -471,12 +471,12 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         <div className="grid grid-cols-4 gap-6">
           {data.map((item, index) => {
             // Determine bar color based on IV level
-            let barColor = "bg-gray-400"; // Default neutral color
+            let barColor = "bg-gray-400 dark:bg-gray-500"; // Default neutral color
             
             if (item.isHighIV) {
-              barColor = "bg-green-500"; // High IV - good for selling
+              barColor = "bg-green-500 dark:bg-green-600"; // High IV - good for selling
             } else if (item.isLowIV) {
-              barColor = "bg-blue-500"; // Low IV - good for buying
+              barColor = "bg-blue-500 dark:bg-blue-600"; // Low IV - good for buying
             }
             
             // Calculate bar heights - make sure they're visible
@@ -487,10 +487,10 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             return (
               <div key={`bar-${index}`} className="flex flex-col items-center">
                 {/* IV values at the top */}
-                <div className="flex justify-center gap-2 mb-2 text-xs font-semibold">
+                <div className="flex justify-center gap-2 mb-2 text-xs font-semibold text-gray-600 dark:text-gray-300">
                   <span>{item.iv.toFixed(1)}%</span>
-                  <span className="text-purple-600">{item.iv60.toFixed(1)}%</span>
-                  <span className="text-pink-600">{item.iv90.toFixed(1)}%</span>
+                  <span className="text-purple-600 dark:text-purple-300">{item.iv60.toFixed(1)}%</span>
+                  <span className="text-pink-600 dark:text-pink-300">{item.iv90.toFixed(1)}%</span>
                 </div>
                 
                 {/* Bar group */}
@@ -504,26 +504,26 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                   
                   {/* IV60 bar */}
                   <div className="flex flex-col items-center justify-end">
-                    <div className="w-4 bg-purple-500 rounded-t-md shadow-md" 
+                    <div className="w-4 bg-purple-500 dark:bg-purple-600 rounded-t-md shadow-md" 
                          style={{ height: `${iv60BarHeight}%` }}>
                     </div>
                   </div>
                   
                   {/* IV90 bar */}
                   <div className="flex flex-col items-center justify-end">
-                    <div className="w-4 bg-pink-500 rounded-t-md shadow-md" 
+                    <div className="w-4 bg-pink-500 dark:bg-pink-600 rounded-t-md shadow-md" 
                          style={{ height: `${iv90BarHeight}%` }}>
                     </div>
                   </div>
                 </div>
                 
                 {/* Date and strategy info */}
-                <div className="text-center p-2 bg-white rounded-md border border-gray-200 shadow-sm w-full">
-                  <div className="text-sm font-medium text-gray-800">Date: {item.displayDate}</div>
+                <div className="text-center p-2 bg-white dark:bg-gray-800 rounded-md border border-gray-200 dark:border-gray-500 shadow-sm w-full">
+                  <div className="text-sm font-medium text-gray-600 dark:text-gray-300">Date: {item.displayDate}</div>
                   <div className={`mt-2 text-xs font-semibold px-2 py-1 rounded-md ${item.strategyColor}`}>
                     {item.strategy}
                   </div>
-                  <div className="mt-2 text-xs text-gray-600">
+                  <div className="mt-2 text-xs text-gray-600 dark:text-gray-300">
                     {item.strategyDetail}
                   </div>
                 </div>
@@ -533,9 +533,9 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Additional trading insights based on IV term structure */}
-        <div className="mt-6 p-3 bg-indigo-50 border border-indigo-100 rounded-md">
-          <h4 className="text-sm font-semibold text-indigo-800 mb-1 text-left">Trading Insights</h4>
-          <ul className="text-xs text-indigo-700 list-disc pl-4 space-y-1 text-left">
+        <div className="mt-6 p-3 bg-indigo-50 dark:bg-indigo-900/30 border border-indigo-100 dark:border-indigo-500 rounded-md">
+          <h4 className="text-sm font-semibold text-indigo-800 dark:text-indigo-300 mb-1 text-left">Trading Insights</h4>
+          <ul className="text-xs text-indigo-700 dark:text-indigo-300 list-disc pl-4 space-y-1 text-left">
             <li>
               <span className="font-medium">Declining IV:</span> Consider selling shorter-dated options to capture premium decay.
             </li>
@@ -687,7 +687,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               </p>
             </div>
             {/* Mock Data Warning - Integrated into stock component */}
-            <div className="mt-1 bg-blue-50 dark:bg-dark-surface border border-blue-100 rounded-md py-1 px-2 text-xs text-blue-700 dark:text-blue-300 flex items-center">
+            <div className="mt-1 bg-blue-50 dark:bg-blue-900/30 border border-blue-100 dark:border-blue-500 rounded-md py-1 px-2 text-xs text-blue-700 dark:text-blue-300 flex items-center">
               <svg xmlns="http://www.w3.org/2000/svg" className="h-3 w-3 mr-1 text-blue-500 dark:text-blue-300" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth="2" d="M13 16h-1v-4h-1m1-4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
               </svg>
@@ -696,7 +696,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           {selectedOption && (
-            <div className="bg-gray-50 dark:bg-dark-surface py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700">
+            <div className="bg-gray-50 dark:bg-gray-700 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500">
               <h2 className="text-lg font-semibold">
                 {selectedOption.type} ${selectedOption.strike} {selectedOption.expirationDate ? new Date(selectedOption.expirationDate).toLocaleDateString() : 'N/A'}
               </h2>
@@ -710,7 +710,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* Options Chain - Side by Side View */}
       {optionsChain && (
-        <div className="bg-gray-50 dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
+        <div className="bg-gray-50 dark:bg-gray-700 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500 mb-4">
           <div className="flex flex-wrap items-center justify-between mb-3">
             <h2 className="text-xl font-semibold mb-4 text-left text-gray-900 dark:text-white">Options Chain</h2>
             
@@ -745,7 +745,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                 <h3 className="text-md font-semibold mb-1 text-blue-700 dark:text-blue-300">Calls</h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border dark:border-gray-700">
-                    <thead className="bg-gray-100 dark:bg-dark-surface">
+                    <thead className="bg-gray-100 dark:bg-gray-700">
                       <tr>
                         <th className="w-1"></th>
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Strike</th>
@@ -756,7 +756,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Volume</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-dark-surface divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {optionsChain && selectedExpiry && optionsChain.calls && 
                         optionsChain.calls
                           .filter(option => option.expiry === selectedExpiry)
@@ -822,7 +822,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                 <h3 className="text-md font-semibold mb-1 text-purple-700 dark:text-purple-300">Puts</h3>
                 <div className="overflow-x-auto">
                   <table className="min-w-full divide-y divide-gray-200 dark:divide-gray-700 border dark:border-gray-700">
-                    <thead className="bg-gray-100 dark:bg-dark-surface">
+                    <thead className="bg-gray-100 dark:bg-gray-700">
                       <tr>
                         <th className="w-1"></th>
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Strike</th>
@@ -833,7 +833,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
                         <th className="px-2 py-1 text-left text-xs font-medium text-gray-500 dark:text-gray-300 uppercase tracking-wider">Volume</th>
                       </tr>
                     </thead>
-                    <tbody className="bg-white dark:bg-dark-surface divide-y divide-gray-200 dark:divide-gray-700">
+                    <tbody className="bg-white dark:bg-gray-800 divide-y divide-gray-200 dark:divide-gray-700">
                       {optionsChain && selectedExpiry && optionsChain.puts && 
                         optionsChain.puts
                           .filter(option => option.expiry === selectedExpiry)
@@ -900,7 +900,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       
       {/* IV Surface Analysis */}
       {optionsChain && (
-        <div className="bg-gray-50 dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
+        <div className="bg-gray-50 dark:bg-gray-700 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500 mb-4">
           <div className="flex justify-between items-center mb-2">
             <h2 className="text-xl font-semibold mb-4 text-left text-gray-900 dark:text-white">IV Surface Analysis</h2>
             
@@ -916,7 +916,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           
           {/* Condensed IV metrics - always visible */}
           <div className="grid grid-cols-1 md:grid-cols-3 gap-2 mb-3">
-            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV30</h3>
               <div className="text-xl font-bold">{calculateIV(30).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -940,7 +940,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV60</h3>
               <div className="text-xl font-bold">{calculateIV(60).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -964,7 +964,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
               )}
             </div>
             
-            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
               <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">IV90</h3>
               <div className="text-xl font-bold">{calculateIV(90).toFixed(1)}%</div>
               <div className="h-1 w-full bg-gray-200 dark:bg-gray-700 rounded-full mb-1">
@@ -991,7 +991,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           
           {/* IV Term Structure Chart - only visible when expanded */}
           {isIVSectionExpanded && (
-            <div className="mt-6 bg-white dark:bg-gray-800 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+            <div className="mt-6 bg-white dark:bg-gray-800 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
               <h3 className="text-md font-semibold mb-3 text-left text-gray-900 dark:text-white">IV Term Structure</h3>
               {renderIVTermStructureChart()}
             </div>
@@ -1003,7 +1003,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       {selectedOption && selectedOption.strike ? (
         <div className="grid grid-cols-1 md:grid-cols-2 gap-4 mb-4">
           {/* Left column - Price visualization */}
-          <div className="bg-gray-50 dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="bg-gray-50 dark:bg-gray-700 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500">
             <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Price Analysis</h2>
             
             {/* Price analysis - table-based layout to prevent overlapping */}
@@ -1097,26 +1097,26 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
           </div>
           
           {/* Right column - Greeks and other metrics */}
-          <div className="bg-gray-50 dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700">
+          <div className="bg-gray-50 dark:bg-gray-700 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500">
             <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Option Greeks</h2>
             
             <div className="grid grid-cols-2 gap-3 mb-4">
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Delta</h3>
                 <div className="text-xl font-bold">{selectedOption.delta}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Price change per $1 move</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Gamma</h3>
                 <div className="text-xl font-bold">{selectedOption.gamma}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Delta change per $1 move</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Theta</h3>
                 <div className="text-xl font-bold">{selectedOption.theta}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Time decay per day</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Vega</h3>
                 <div className="text-xl font-bold">{selectedOption.vega}</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">Price change per 1% IV</p>
@@ -1126,20 +1126,20 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Option Vitals</h2>
             
             <div className="grid grid-cols-2 gap-3">
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Implied Volatility</h3>
                 <div className="text-xl font-bold">{selectedOption.iv}%</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Expiration</h3>
                 <div className="text-xl font-bold">{daysToExpiration} days</div>
                 <p className="text-xs text-gray-500 dark:text-gray-300 mt-1">{selectedOption.expirationDate}</p>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Volume</h3>
                 <div className="text-xl font-bold">{selectedOption.volume.toLocaleString()}</div>
               </div>
-              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-700 shadow-sm">
+              <div className="bg-white dark:bg-gray-800 py-2 px-3 rounded-lg border border-gray-200 dark:border-gray-500 shadow-sm">
                 <h3 className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Open Interest</h3>
                 <div className="text-xl font-bold">{selectedOption.openInterest.toLocaleString()}</div>
               </div>
@@ -1149,7 +1149,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       ) : (
         /* Show a prompt when no option is selected */
         optionsChain && selectedExpiry && (
-          <div className="bg-blue-50 dark:bg-dark-surface py-4 px-3 rounded-lg border border-blue-100 dark:border-gray-700 mb-4 text-center">
+          <div className="bg-blue-50 dark:bg-blue-900/30 py-4 px-3 rounded-lg border border-blue-100 dark:border-blue-500 mb-4 text-center">
             <h3 className="text-xl font-semibold text-blue-800 dark:text-blue-300 mb-2">Select an Option to Analyze</h3>
             <p className="text-blue-600 dark:text-blue-300 mb-4">
               Choose an option from the tables below to view detailed analysis, Greeks, and price visualization.
@@ -1164,11 +1164,11 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
       )}
       
       {/* Risk Assessment and Options Cost Calculator */}
-      <div className="bg-gray-50 dark:bg-dark-surface py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-700 mb-4">
+      <div className="bg-gray-50 dark:bg-gray-700 py-3 px-3 rounded-lg border border-gray-200 dark:border-gray-500 mb-4">
         <h2 className="text-lg font-semibold mb-3 text-gray-900 dark:text-white">Risk Analysis & Cost Calculator</h2>
         
         <div className="grid grid-cols-1 md:grid-cols-3 gap-3 mb-3">
-          <div className="py-2 px-3 rounded-lg border bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-700">
+          <div className="py-2 px-3 rounded-lg border bg-red-50 dark:bg-red-900/30 border-red-200 dark:border-red-500">
             <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Maximum Loss</p>
             <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
               ${(selectedOption.premium * 100).toFixed(2)} per contract
@@ -1178,7 +1178,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="py-2 px-3 rounded-lg border bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-700">
+          <div className="py-2 px-3 rounded-lg border bg-green-50 dark:bg-green-900/30 border-green-200 dark:border-green-500">
             <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Profit at Expiration</p>
             <p className="text-lg font-medium text-gray-800 dark:text-gray-200">
               {selectedOption.type === 'Call' 
@@ -1191,7 +1191,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
             </p>
           </div>
           
-          <div className="py-2 px-3 rounded-lg border bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-700">
+          <div className="py-2 px-3 rounded-lg border bg-blue-50 dark:bg-blue-900/30 border-blue-200 dark:border-blue-500">
             <p className="text-sm font-medium mb-1 text-gray-600 dark:text-gray-300">Time Value</p>
             <p className="text-lg font-bold text-gray-800 dark:text-gray-200">
               ${(() => {
@@ -1211,7 +1211,7 @@ const OptionsVisualizer = ({ onOptionSelect, stockSymbol, optionsData, stockData
         </div>
         
         {/* Options Cost Calculator */}
-        <div className="border rounded-lg py-3 px-3 bg-white dark:bg-gray-800 dark:border-gray-700">
+        <div className="border rounded-lg py-3 px-3 bg-white dark:bg-gray-800 dark:border-gray-500">
           <h3 className="text-md font-semibold mb-2 text-gray-900 dark:text-white">Options Cost Calculator</h3>
           
           <div className="grid grid-cols-1 md:grid-cols-2 gap-3">
