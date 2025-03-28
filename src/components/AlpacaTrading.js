@@ -2,7 +2,7 @@ import React, { useState, useEffect, useCallback } from 'react';
 import { DollarSign, TrendingUp, AlertCircle, Check, Search, Calculator } from 'lucide-react';
 import { fetchAccountInfo, placeOrder as placeOrderService, fetchStockData, fetchOptionsChain } from '../services/alpacaService';
 
-const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSymbolChange, isSearchDisabled = false }) => {
+const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSymbolChange, isSearchDisabled }) => {
   const [accountInfo, setAccountInfo] = useState(null);
   const [isLoading, setIsLoading] = useState(false);
   const [error, setError] = useState(null);
@@ -198,6 +198,8 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
     }
   };
 
+  const searchDisabled = isSearchDisabled === true;
+
   if (isLoading) {
     return (
       <div className="w-full p-4 bg-white rounded-lg shadow-lg mt-6">
@@ -217,7 +219,7 @@ const AlpacaTrading = ({ selectedOption, stockSymbol, onOptionsLoaded, onStockSy
       </h2>
       
       {/* Options Search - Only shown if search is not disabled */}
-      {!isSearchDisabled ? (
+      {!searchDisabled ? (
         <div className="bg-blue-50 border border-blue-200 rounded-lg p-4 mb-4">
           <div className="flex items-center mb-3">
             <Search className="h-5 w-5 mr-2 text-blue-600" />
